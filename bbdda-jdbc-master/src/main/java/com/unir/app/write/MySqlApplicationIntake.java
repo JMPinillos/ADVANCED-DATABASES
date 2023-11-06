@@ -34,10 +34,10 @@ public class MySqlApplicationIntake {
             log.info("Conexión establecida con la base de datos MySQL");
 
             // Leemos los datos del fichero CSV de los departamentos
-            List<MySqlFuelStations> departments = readDataDepartments();
+            List<MySqlFuelStations> fuelStations = readDataFuelStations();
 
             // Introducimos los datos en la base de datos
-            intakeDepartments(connection, departments);
+            intakeDepartments(connection, fuelStations);
 
             List<MySqlFuel> employees = readData();
 
