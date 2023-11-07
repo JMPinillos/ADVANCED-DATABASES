@@ -7,6 +7,7 @@ import com.opencsv.exceptions.CsvValidationException;
 import com.unir.config.MySqlConnector;
 import com.unir.model.MySqlFuelStations;
 import com.unir.model.MySqlFuel;
+import com.unir.model.MySqlProvinces;
 import lombok.extern.slf4j.Slf4j;
 import java.io.FileReader;
 import java.io.IOException;
@@ -31,18 +32,18 @@ public class MySqlApplicationIntake {
         //Try-with-resources. Se cierra la conexión automáticamente al salir del bloque try
         try(Connection connection = new MySqlConnector("localhost", DATABASE).getConnection()) {
 
-            log.info("Conexión establecida con la base de datos MySQL");
+            log.info("Conexión establecida con la base de datos " + DATABASE);
 
             // Leemos los datos del fichero CSV de los departamentos
-            List<MySqlFuelStations> fuelStations = readDataFuelStations();
+            List<MySqlProvinces> provinces = readDataProvinces();
 
             // Introducimos los datos en la base de datos
-            intakeDepartments(connection, fuelStations);
+            intakeProvinces(connection, provinces);
 
-            List<MySqlFuel> employees = readData();
+            //List<MySqlFuel> employees = readData();
 
             // Introducimos los datos en la base de datos
-            intake(connection, employees);
+            //intake(connection, employees);
 
         } catch (Exception e) {
             log.error("Error al tratar con la base de datos", e);
@@ -56,17 +57,17 @@ public class MySqlApplicationIntake {
      * @return - Lista de empleados
      */
 
-    private static List<MySqlFuelStations> readDataDepartments() {
+    private static List<MySqlProvinces> readDataProvinces() {
 
         // Try-with-resources. Se cierra el reader automáticamente al salir del bloque try
         // CSVReader nos permite leer el fichero CSV linea a linea
         try (CSVReader reader = new CSVReaderBuilder(
-                new FileReader("Departamentos.csv"))
+                new FileReader("Precios_EESS_terrestres.csv"))
                 .withCSVParser(new CSVParserBuilder()
-                        .withSeparator(',').build()).build()) {
+                        .withSeparator(';').build()).build()) {
 
-            // Creamos la lista de departamentos
-            List<MySqlFuelStations> departments = new LinkedList<>();
+            // Creamos la lista de provincias
+            List<MySqlProvinces> provinces = new LinkedList<>();
 
             // Saltamos la primera linea, que contiene los nombres de las columnas del CSV
             reader.skip(1);
@@ -76,65 +77,62 @@ public class MySqlApplicationIntake {
             while((nextLine = reader.readNext()) != null) {
 
                 // Creamos el departamento y lo añadimos a la lista
-                MySqlFuelStations department = new MySqlFuelStations(
-                        nextLine[0],
-                        nextLine[1]
+                MySqlProvinces province = new MySqlProvinces(
+                        nextLine[0]
                 );
-                departments.add(department);
+                provinces.add(province);
             }
-            return departments;
+            return provinces;
         } catch (IOException e) {
-            log.error("Error al leer el fichero Departamentos.", e);
+            log.error("Error al leer el fichero Precios_EESS_terrestres", e);
             throw new RuntimeException(e);
         } catch (CsvValidationException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private static void intakeDepartments(Connection connection, List<MySqlFuelStations> departments) throws SQLException {
+    private static void intakeProvinces(Connection connection, List<MySqlProvinces> provinces) throws SQLException {
 
-        String selectSql = "SELECT COUNT(*) FROM departments WHERE dept_no = ?";
-        String insertSql = "INSERT INTO departments (dept_no, dept_name)"
-                + "VALUES (?, ?)";
-        String updateSql = "UPDATE departments SET dept_name = ? WHERE dept_no = ?";
+        String selectSql = "SELECT COUNT(*) FROM provinces WHERE name = ?";
+        String insertSql = "INSERT INTO provinces (dept_name)"
+                + "VALUES (?)";
+
         int lote = 5;
         int contador = 0;
 
         // Preparamos las consultas, una unica vez para poder reutilizarlas en el batch
         PreparedStatement insertStatement = connection.prepareStatement(insertSql);
-        PreparedStatement updateStatement = connection.prepareStatement(updateSql);
 
         // Desactivamos el autocommit para poder ejecutar el batch y hacer commit al final
         connection.setAutoCommit(false);
 
-        for (MySqlFuelStations department : departments) {
+        for (MySqlProvinces province : provinces) {
 
             // Comprobamos si el empleado existe
             PreparedStatement selectStatement = connection.prepareStatement(selectSql);
-            selectStatement.setString(1, department.getDept_no()); // Id_departamento
+            selectStatement.setString(1, province.getName()); // Nombre de la provincia
             ResultSet resultSet = selectStatement.executeQuery();
             resultSet.next(); // Nos movemos a la primera fila
             int rowCount = resultSet.getInt(1);
 
-            // Si existe, actualizamos. Si no, insertamos
-            if(rowCount > 0) {
-                fillUpdateStatementdepartment(updateStatement, department);
-                updateStatement.addBatch();
-            } else {
-                fillInsertStatementdepartment(insertStatement, department);
+            // Si no existe, insertamos. Si existe, no hacemos nada.
+            if(rowCount == 0) {
+                fillInsertStatementProvinces(insertStatement, province);
                 insertStatement.addBatch();
+
+            } else {
+                //fillUpdateStatementdepartment(updateStatement, department);
+                //updateStatement.addBatch();
             }
 
             // Ejecutamos el batch cada lote de registros
             if (++contador % lote == 0) {
-                updateStatement.executeBatch();
                 insertStatement.executeBatch();
             }
         }
 
         // Ejecutamos el batch final
         insertStatement.executeBatch();
-        updateStatement.executeBatch();
 
         // Hacemos commit y volvemos a activar el autocommit
         connection.commit();
@@ -145,26 +143,13 @@ public class MySqlApplicationIntake {
      * Rellena los parámetros de un PreparedStatement para una consulta INSERT.
      *
      * @param statement - PreparedStatement
-     * @param department - Departamento
+     * @param provinces - Departamento
      * @throws SQLException - Error al rellenar los parámetros
      */
-    private static void fillInsertStatementdepartment(PreparedStatement statement, MySqlFuelStations department) throws SQLException {
-        statement.setString(1, department.getDept_no());
-        statement.setString(2, department.getDept_name());
+    private static void fillInsertStatementProvinces(PreparedStatement statement, MySqlProvinces provinces) throws SQLException {
+        statement.setString(1, provinces.getName());
     }
-
-    /**
-     * Rellena los parámetros de un PreparedStatement para una consulta UPDATE.
-     *
-     * @param statement - PreparedStatement
-     * @param department - Departamento
-     * @throws SQLException - Error al rellenar los parámetros
-     */
-    private static void fillUpdateStatementdepartment(PreparedStatement statement, MySqlFuelStations department) throws SQLException {
-        statement.setString(1, department.getDept_name());
-        statement.setString(2, department.getDept_no());
-    }
-
+/*
     private static List<MySqlFuel> readData() {
 
         // Try-with-resources. Se cierra el reader automáticamente al salir del bloque try
@@ -218,7 +203,7 @@ public class MySqlApplicationIntake {
      * @param employees - Lista de empleados
      * @throws SQLException - Error al ejecutar la consulta
      */
-    private static void intake(Connection connection, List<MySqlFuel> employees) throws SQLException {
+/*    private static void intake(Connection connection, List<MySqlFuel> employees) throws SQLException {
 
         // Consultas para los empleados
         String selectSql = "SELECT COUNT(*) FROM employees WHERE emp_no = ?";
@@ -307,7 +292,7 @@ public class MySqlApplicationIntake {
      * @param employee - Empleado
      * @throws SQLException - Error al rellenar los parámetros
      */
-    private static void fillInsertStatement(PreparedStatement statement, MySqlFuel employee) throws SQLException {
+/*    private static void fillInsertStatement(PreparedStatement statement, MySqlFuel employee) throws SQLException {
         statement.setInt(1, employee.getEmployeeId());
         statement.setString(2, employee.getFirstName());
         statement.setString(3, employee.getLastName());
@@ -323,7 +308,7 @@ public class MySqlApplicationIntake {
      * @param employee - Empleado
      * @throws SQLException - Error al rellenar los parámetros
      */
-    private static void fillUpdateStatement(PreparedStatement statement, MySqlFuel employee) throws SQLException {
+/*    private static void fillUpdateStatement(PreparedStatement statement, MySqlFuel employee) throws SQLException {
         statement.setString(1, employee.getFirstName());
         statement.setString(2, employee.getLastName());
         statement.setString(3, employee.getGender());
@@ -340,7 +325,7 @@ public class MySqlApplicationIntake {
      * @param employee - Empleado
      * @throws SQLException - Error al rellenar los parámetros
      */
-    private static void fillInsertStatementDeptEmp(PreparedStatement statement, MySqlFuel employee) throws SQLException {
+/*    private static void fillInsertStatementDeptEmp(PreparedStatement statement, MySqlFuel employee) throws SQLException {
         statement.setInt(1, employee.getEmployeeId());
         statement.setString(2, employee.getDept_no());
         statement.setDate(3, employee.getFromDate());
@@ -354,7 +339,7 @@ public class MySqlApplicationIntake {
      * @param employee - Empleado
      * @throws SQLException - Error al rellenar los parámetros
      */
-    private static void fillUpdateStatementDeptEmp(PreparedStatement statement, MySqlFuel employee) throws SQLException {
+ /*   private static void fillUpdateStatementDeptEmp(PreparedStatement statement, MySqlFuel employee) throws SQLException {
         statement.setDate(1, employee.getFromDate());
         statement.setDate(2, employee.getToDate());
         statement.setInt(3, employee.getEmployeeId());

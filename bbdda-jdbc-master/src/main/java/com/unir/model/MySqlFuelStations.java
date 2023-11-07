@@ -14,7 +14,7 @@ public class MySqlFuelStations {
     private int loc_id;
     private String margen;
     private String address;
-    private DateTime price_date;
+  //  private DateTime price_date;
     private String horario;
     private int op_id;
 }
