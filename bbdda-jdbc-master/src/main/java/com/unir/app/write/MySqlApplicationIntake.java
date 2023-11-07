@@ -7,6 +7,7 @@ import com.opencsv.exceptions.CsvValidationException;
 import com.unir.config.MySqlConnector;
 import com.unir.model.MySqlFuelStations;
 import com.unir.model.MySqlFuel;
+import com.unir.model.MySqlMunicipalities;
 import com.unir.model.MySqlProvinces;
 import lombok.extern.slf4j.Slf4j;
 import java.io.FileReader;
@@ -28,15 +29,15 @@ public class MySqlApplicationIntake {
 
     public static void main(String[] args) {
 
-        //Creamos conexion. No es necesario indicar puerto en host si usamos el default, 1521
-        //Try-with-resources. Se cierra la conexión automáticamente al salir del bloque try
+        // Creamos conexion. No es necesario indicar puerto en host si usamos el default, 1521
+        // Try-with-resources. Se cierra la conexión automáticamente al salir del bloque try
         try(Connection connection = new MySqlConnector("localhost", DATABASE).getConnection()) {
 
             log.info("Conexión establecida con la base de datos " + DATABASE);
 
             // Leemos los datos del fichero CSV de los departamentos
             List<MySqlProvinces> provinces = readDataProvinces();
-
+            //List<MySqlMunicipalities> provinces = readDataProvinces();
             // Introducimos los datos en la base de datos
             intakeProvinces(connection, provinces);
 
@@ -94,7 +95,7 @@ public class MySqlApplicationIntake {
     private static void intakeProvinces(Connection connection, List<MySqlProvinces> provinces) throws SQLException {
 
         String selectSql = "SELECT COUNT(*) FROM provinces WHERE name = ?";
-        String insertSql = "INSERT INTO provinces (dept_name)"
+        String insertSql = "INSERT INTO provinces (name)"
                 + "VALUES (?)";
 
         int lote = 5;
