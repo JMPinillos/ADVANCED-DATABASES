@@ -3,6 +3,8 @@ package com.unir.model;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.Date;
+
 @AllArgsConstructor
 @Getter
 public class MySqlFuelStations {

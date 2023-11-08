@@ -6,5 +6,6 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class MySqlProvinces {
+    private int pro_id;
     private String name;
 }
