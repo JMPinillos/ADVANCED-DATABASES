@@ -81,7 +81,20 @@ public class MySqlApplicationIntake {
                 MySqlProvinces province = new MySqlProvinces(
                         nextLine[0]
                 );
-                provinces.add(province);
+
+                boolean exist = false;
+
+                for (MySqlProvinces compare : provinces) {
+                    if (compare.getName().equals(province.getName())) {
+                        exist = true;
+                        break;
+                    }
+                }
+
+                if (!exist) {
+                    provinces.add(province);
+                }
+                
             }
             return provinces;
         } catch (IOException e) {
