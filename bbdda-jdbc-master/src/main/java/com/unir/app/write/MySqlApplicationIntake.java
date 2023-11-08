@@ -112,18 +112,18 @@ public class MySqlApplicationIntake {
             // Comprobamos si el empleado existe
             PreparedStatement selectStatement = connection.prepareStatement(selectSql);
             selectStatement.setString(1, province.getName()); // Nombre de la provincia
+
             ResultSet resultSet = selectStatement.executeQuery();
             resultSet.next(); // Nos movemos a la primera fila
             int rowCount = resultSet.getInt(1);
 
             // Si no existe, insertamos. Si existe, no hacemos nada.
-            if(rowCount == 0) {
+            if(rowCount > 0) {
+                //fillUpdateStatement(updateStatement, employee);
+                //updateStatement.addBatch();
+            } else {
                 fillInsertStatementProvinces(insertStatement, province);
                 insertStatement.addBatch();
-
-            } else {
-                //fillUpdateStatementdepartment(updateStatement, department);
-                //updateStatement.addBatch();
             }
 
             // Ejecutamos el batch cada lote de registros
