@@ -5,7 +5,6 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;
 import com.unir.config.MySqlConnector;
-import com.unir.model.MySqlFuelStations;
 import com.unir.model.MySqlFuel;
 import com.unir.model.MySqlMunicipalities;
 import com.unir.model.MySqlProvinces;
@@ -13,8 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.*;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -37,14 +34,11 @@ public class MySqlApplicationIntake {
 
             // Leemos los datos del fichero CSV de los departamentos
             List<MySqlProvinces> provinces = readDataProvinces();
-            //List<MySqlMunicipalities> municipalities = readDataProvinces();
+            List<MySqlMunicipalities> municipalities = readDataProvinces();
+
             // Introducimos los datos en la base de datos
             intakeProvinces(connection, provinces);
-
-            //List<MySqlFuel> employees = readData();
-
-            // Introducimos los datos en la base de datos
-            //intake(connection, employees);
+            intakeMunicipalities(connection, municipalities);
 
         } catch (Exception e) {
             log.error("Error al tratar con la base de datos", e);
@@ -70,6 +64,7 @@ public class MySqlApplicationIntake {
             // Creamos las listas
             List<MySqlProvinces> provinces = new LinkedList<>();
             List<MySqlMunicipalities> municipalities = new LinkedList<>();
+
 
             // Saltamos la primera linea, que contiene los nombres de las columnas del CSV
             reader.skip(1);
@@ -104,10 +99,10 @@ public class MySqlApplicationIntake {
                     }
                 }
 
-                if (province == null) {
+                if (municipalitie == null) {
                     MySqlMunicipalities municipalitie = new MySqlMunicipalities(
                             (municipalities.size()+1),  // ID segun el contenido de la tabla. 
-                            nextLine[1]                 // Cogemos el dato de la columna municipio. 
+                            nextLine[1]                 // Cogemos el dato de la columna municipio.
                     );
                     municipalities.add(municipalitie);
                 }
@@ -175,6 +170,7 @@ public class MySqlApplicationIntake {
         String selectSqlProvinces = "SELECT id_pro FROM provinces WHERE name = ?";
 
         // Consultas de la tabla Municipios
+        String selectSqlMunicipalities = "SELECT COUNT(*) FROM municipalities WHERE name = ?";
         String insertSqlMunicipalities = "INSERT INTO municipalities (mun_id, pro_id, name)"
                 + "VALUES (?, ?, ?)";
 
@@ -196,7 +192,7 @@ public class MySqlApplicationIntake {
 
             ResultSet resultSet = selectStatementMunicipalities.executeQuery();
             resultSet.next(); // Nos movemos a la primera fila
-            int rowCount = resultSet.getPro_id;
+            int rowCount = resultSet.getInt(1);
 
             // Si no existe, insertamos. Si existe, no hacemos nada.
             if(rowCount == 0) {
@@ -232,13 +228,21 @@ public class MySqlApplicationIntake {
     }
 
     private static void fillSelectStatementIdProvToIdMun(PreparedStatement statement, MySqlProvinces provinces) throws SQLException {
-        statement.setString(2, provinces.getName());
+        statement.setString(1, provinces.getName());
     }
 
     private static void fillInsertStatementMunicipalities(PreparedStatement statement, MySqlMunicipalities municipalities) throws SQLException {
+
+        // Consultas de la tabla provincias para coger el id
+        Connection connection;
+
+        String selectSqlProvinces = "SELECT id_pro FROM provinces WHERE name = ?";
+        PreparedStatement selectStatementIdProvincesMun = connection.prepareStatement(selectSqlProvinces);
+        selectStatementIdProvincesMun.setString(1, municipalities.getName());
+
         statement.setInt(1, municipalities.getMun_id());
-        statement.setName(2, fillSelectStatementIdProvToIdMun);
-        //statement.setName(2, municipalities.getPro_id());
+        statement.setString(2, selectStatementIdProvincesMun.executeQuery());
+       // statement.setName(2, fillSelectStatementIdProvToIdMun);
         statement.setString(3, municipalities.getName());
     }
 
