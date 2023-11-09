@@ -34,7 +34,7 @@ public class MySqlApplicationIntake {
 
             // Leemos los datos del fichero CSV de los departamentos
             List<MySqlProvinces> provinces = readDataProvinces();
-            List<MySqlMunicipalities> municipalities = readDataProvinces();
+            List<MySqlMunicipalities> municipalities = readDataMunicipalities();
 
             // Introducimos los datos en la base de datos
             intakeProvinces(connection, provinces);
@@ -162,6 +162,53 @@ public class MySqlApplicationIntake {
         // Hacemos commit y volvemos a activar el autocommit
         connection.commit();
         connection.setAutoCommit(true);
+    }
+
+    private static List<MySqlMunicipalities> readDataMunicipalities() {
+
+        // Try-with-resources. Se cierra el reader automáticamente al salir del bloque try
+        // CSVReader nos permite leer el fichero CSV linea a linea
+        try (CSVReader reader = new CSVReaderBuilder(
+                new FileReader("Precios_EESS_terrestres.csv"))
+                .withCSVParser(new CSVParserBuilder()
+                        .withSeparator(';').build()).build()) {
+
+            // Creamos las listas
+            List<MySqlMunicipalities> municipalities = new LinkedList<>();
+
+
+            // Saltamos la primera linea, que contiene los nombres de las columnas del CSV
+            reader.skip(1);
+            String[] nextLine;
+
+            // Leemos el fichero linea a linea
+            while((nextLine = reader.readNext()) != null) {
+
+                MySqlMunicipalities municipalitie = null;
+
+                for (MySqlMunicipalities compare : municipalities) {
+                    if (compare.getName().equals(nextLine[1])) {
+                        municipalitie = compare;
+                        break;
+                    }
+                }
+
+                if (municipalitie == null) {
+                    MySqlMunicipalities municipalitie = new MySqlMunicipalities(
+                            (municipalities.size()+1),  // ID segun el contenido de la tabla.
+                            nextLine[1]                 // Cogemos el dato de la columna municipio.
+                    );
+                    municipalities.add(municipalitie);
+                }
+            }
+            return municipalities;
+
+        } catch (IOException e) {
+            log.error("Error al leer el fichero Precios_EESS_terrestres", e);
+            throw new RuntimeException(e);
+        } catch (CsvValidationException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static void intakeMunicipalities(Connection connection, List<MySqlMunicipalities> municipalities) throws SQLException {
