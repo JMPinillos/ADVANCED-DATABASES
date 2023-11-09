@@ -44,7 +44,7 @@ public class MySqlApplicationIntake {
             operators = readDataOperators();
             //fuels = readDataFuels();
             //prices = readDataPrices();
-            //fuelStations = readDataFuelStations();
+            //stations = readDataStations();
 
             // Introducimos los datos en la base de datos
             //intakeProvinces(connection, provinces);
