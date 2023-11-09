@@ -2,11 +2,10 @@ package com.unir.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import java.sql.Date;
 
 @AllArgsConstructor
 @Getter
-public class MySqlFuel {
+public class MySqlFuels {
     private int fuel_id;
     private String name;
 }
