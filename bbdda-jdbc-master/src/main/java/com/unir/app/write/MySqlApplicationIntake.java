@@ -41,19 +41,19 @@ public class MySqlApplicationIntake {
             //provinces = readDataProvinces();
             //municipalities = readDataMunicipalities();
             //localities = readDataLocalities();
-            operators = readDataOperators();
-            //fuels = readDataFuels();
-            //prices = readDataPrices();
+            //operators = readDataOperators();
+            fuels = readDataFuels();
             //stations = readDataStations();
+            //prices = readDataPrices();
 
             // Introducimos los datos en la base de datos
             //intakeProvinces(connection, provinces);
             //intakeMunicipalities(connection, municipalities);
             //intakeLocalities(connection, localities);
-            intakeOperators(connection, operators);
-            //intakeFuels(connection, fuels);
-            //intakePrices(connection, prices);
+            //intakeOperators(connection, operators);
+            intakeFuels(connection, fuels);
             //intakeFuelStations(connection, fuelStations);
+            //intakePrices(connection, prices);
 
         } catch (Exception e) {
             log.error("Error al tratar con la base de datos", e);
@@ -431,6 +431,94 @@ public class MySqlApplicationIntake {
         connection.setAutoCommit(true);
     }
 
+    private static List<MySqlFuels> readDataFuels() {
+
+        // Try-with-resources. Se cierra el reader automáticamente al salir del bloque try
+        // CSVReader nos permite leer el fichero CSV linea a linea
+        try (CSVReader reader = new CSVReaderBuilder(
+                new FileReader("Precios_EESS_terrestres.csv"))
+                .withCSVParser(new CSVParserBuilder()
+                        .withSeparator(';').build()).build()) {
+
+            String[] nextLine = reader.readNext();
+            int i = 9;
+
+            while(i <= 23) {
+
+                MySqlFuels fuel = null;
+
+                for (MySqlFuels compare : fuels) {
+                    if (compare.getName().equals(nextLine[i])) {
+                        fuel = compare;
+                        break;
+                    }
+                }
+
+                if (fuel == null) {
+                    fuel = new MySqlFuels (
+                            (fuels.size()+1),   // ID segun el contenido de la tabla.
+                            nextLine[i]             // Cogemos el dato de la columna provincia.
+                    );
+                    fuels.add(fuel);
+                }
+                i++;
+            }
+            return fuels;
+
+        } catch (IOException e) {
+            log.error("Error al leer el fichero Precios_EESS_terrestres", e);
+            throw new RuntimeException(e);
+        } catch (CsvValidationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static void intakeFuels(Connection connection, List<MySqlFuels> fuels) throws SQLException {
+
+        // Consultas de la tabla Municipios
+        String selectSqlFuels = "SELECT COUNT(*) FROM fuels WHERE name = ?";
+        String insertSqlFuels = "INSERT INTO fuels (fuel_id, name)"
+                + "VALUES (?, ?)";
+
+        int lote = 5;
+        int contador = 0;
+
+        // Preparamos las consultas, una unica vez para poder reutilizarlas en el batch
+        PreparedStatement insertStatementFuels = connection.prepareStatement(insertSqlFuels);
+
+        // Desactivamos el autocommit para poder ejecutar el batch y hacer commit al final
+        connection.setAutoCommit(false);
+
+        for (MySqlFuels fuel : fuels) {
+
+            // Comprobamos si el municipio existe
+            PreparedStatement selectStatementFuels = connection.prepareStatement(selectSqlFuels);
+            selectStatementFuels.setString(1, fuel.getName()); // Nombre del operador
+
+            ResultSet resultSet = selectStatementFuels.executeQuery();
+            resultSet.next(); // Nos movemos a la primera fila
+            int rowCount = resultSet.getInt(1);
+
+            // Si no existe, insertamos. Si existe, no hacemos nada.
+            if(rowCount == 0) {
+                fillInsertStatementFuels(insertStatementFuels, fuel);
+                insertStatementFuels.addBatch();
+            }
+
+            // Ejecutamos el batch cada lote de registros
+            if (++contador % lote == 0) {
+                insertStatementFuels.executeBatch();
+            }
+        }
+
+        // Ejecutamos el batch final
+        insertStatementFuels.executeBatch();
+
+        // Hacemos commit y volvemos a activar el autocommit
+        connection.commit();
+        connection.setAutoCommit(true);
+    }
+
     /**
      * Rellena los parámetros de un PreparedStatement para una consulta INSERT.
      *
@@ -458,6 +546,11 @@ public class MySqlApplicationIntake {
     private static void fillInsertStatementOperators(PreparedStatement statement, MySqlOperators operators) throws SQLException {
         statement.setInt(1, operators.getOp_id());
         statement.setString(2, operators.getName());
+    }
+
+    private static void fillInsertStatementFuels(PreparedStatement statement, MySqlFuels fuels) throws SQLException {
+        statement.setInt(1, fuels.getFuel_id());
+        statement.setString(2, fuels.getName());
     }
 
     /**
