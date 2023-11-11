@@ -7,16 +7,18 @@ import java.util.Date;
 
 @AllArgsConstructor
 @Getter
-public class MySqlFuelStations {
+public class MySqlStations {
     private int station_id;
-    private String name;
-    private String cp;
+    private int loc_id;
+    private int op_id;
+    private int fuel_id;
+    private int cp;
     private float longitud;
     private float latitud;
-    private int loc_id;
-    private String margen;
+    private enum margen {D,I,N};
     private String address;
     private Date price_date;
     private String horario;
-    private int op_id;
+    private enum tipo {P,M};
+
 }
