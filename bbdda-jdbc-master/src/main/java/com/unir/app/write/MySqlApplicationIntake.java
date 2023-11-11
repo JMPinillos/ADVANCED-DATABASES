@@ -601,6 +601,7 @@ public class MySqlApplicationIntake {
                     for (MySqlOperators operator : operators) {
                         if (operator.getName().equals(nextLine[25])) {
                             id_op = operator.getOp_id();
+                            log.info(String.valueOf(id_op));
                             break;
                         }
                     }
