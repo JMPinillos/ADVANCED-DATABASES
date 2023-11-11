@@ -3,7 +3,7 @@ package com.unir.model;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.Date;
+import java.sql.Date;
 
 @AllArgsConstructor
 @Getter
@@ -14,8 +14,8 @@ public class MySqlStations {
     private String cp;
     private String address;
     private String margen;
-    private float longitud;
-    private float latitud;
+    private Float longitud;
+    private Float latitud;
     private Date price_date;
     private String tipo;
     private String horario;

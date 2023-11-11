@@ -23,6 +23,7 @@ import java.util.List;
 public class MySqlApplicationIntake {
 
     private static final String DATABASE = "laboratorio_EESS";
+    private static final String CSV = "Precios_EESS.csv";
     private static List<MySqlProvinces> provinces = new LinkedList<>();
     private static List<MySqlMunicipalities> municipalities = new LinkedList<>();
     private static List<MySqlLocalities> localities = new LinkedList<>();
@@ -40,23 +41,23 @@ public class MySqlApplicationIntake {
             log.info("Conexión establecida con la base de datos " + DATABASE);
 
             // Leemos los datos del fichero CSV
-            //provinces = readDataProvinces();
-            //municipalities = readDataMunicipalities();
-            //localities = readDataLocalities();
-            //operators = readDataOperators();
-            //fuels = readDataFuels();
+            provinces = readDataProvinces();
+            municipalities = readDataMunicipalities();
+            localities = readDataLocalities();
+            operators = readDataOperators();
+            fuels = readDataFuels();
             stations = readDataStations();
             //prices = readDataPrices();
 
             // Borramos los datos de la base de datos
-            eraseDB();
+            //eraseDB();
 
             // Introducimos los datos en la base de datos
-            //intakeProvinces(connection, provinces);
-            //intakeMunicipalities(connection, municipalities);
-            //intakeLocalities(connection, localities);
-            //intakeOperators(connection, operators);
-            //intakeFuels(connection, fuels);
+            intakeProvinces(connection, provinces);
+            intakeMunicipalities(connection, municipalities);
+            intakeLocalities(connection, localities);
+            intakeOperators(connection, operators);
+            intakeFuels(connection, fuels);
             intakeStations(connection, stations);
             //intakePrices(connection, prices);
 
@@ -65,18 +66,13 @@ public class MySqlApplicationIntake {
         }
     }
 
-    private static void eraseDB(Connection connection) {
+/*    private static void eraseDB(Connection connection) {
 
-        // Consultas de la tabla provincias
-        String selectSqlProvinces = "SELECT COUNT(*) FROM provinces WHERE name = ?";
-        String insertSqlProvinces = "INSERT INTO provinces (pro_id, name)"
-                + "VALUES (?, ?)";
-
-        int lote = 5;
-        int contador = 0;
+        // Borramos la base de datos
+        String deleteSqlProvinces = "DELETE SELECT * FROM provinces;
 
         // Preparamos las consultas, una unica vez para poder reutilizarlas en el batch
-        PreparedStatement insertStatementProvinces = connection.prepareStatement(insertSqlProvinces);
+        PreparedStatement deleteStatementProvinces = connection.prepareStatement(deleteSqlProvinces);
 
         // Desactivamos el autocommit para poder ejecutar el batch y hacer commit al final
         connection.setAutoCommit(false);
@@ -110,13 +106,13 @@ public class MySqlApplicationIntake {
         connection.commit();
         connection.setAutoCommit(true);
     }
-
+}*/
     private static List<MySqlProvinces> readDataProvinces() {
 
         // Try-with-resources. Se cierra el reader automáticamente al salir del bloque try
         // CSVReader nos permite leer el fichero CSV linea a linea
         try (CSVReader reader = new CSVReaderBuilder(
-                new FileReader("Precios_EESS_terrestres.csv"))
+                new FileReader(CSV))
                 .withCSVParser(new CSVParserBuilder()
                         .withSeparator(';').build()).build()) {
 
@@ -147,7 +143,7 @@ public class MySqlApplicationIntake {
             return provinces;
 
         } catch (IOException e) {
-            log.error("Error al leer el fichero Precios_EESS_terrestres", e);
+            log.error("Error al leer el fichero" + CSV, e);
             throw new RuntimeException(e);
         } catch (CsvValidationException e) {
             throw new RuntimeException(e);
@@ -205,7 +201,7 @@ public class MySqlApplicationIntake {
         // Try-with-resources. Se cierra el reader automáticamente al salir del bloque try
         // CSVReader nos permite leer el fichero CSV linea a linea
         try (CSVReader reader = new CSVReaderBuilder(
-                new FileReader("Precios_EESS_terrestres.csv"))
+                new FileReader(CSV))
                 .withCSVParser(new CSVParserBuilder()
                         .withSeparator(';').build()).build()) {
 
@@ -244,7 +240,7 @@ public class MySqlApplicationIntake {
             return municipalities;
 
         } catch (IOException e) {
-            log.error("Error al leer el fichero Precios_EESS_terrestres", e);
+            log.error("Error al leer el fichero" + CSV, e);
             throw new RuntimeException(e);
         } catch (CsvValidationException e) {
             throw new RuntimeException(e);
@@ -302,7 +298,7 @@ public class MySqlApplicationIntake {
         // Try-with-resources. Se cierra el reader automáticamente al salir del bloque try
         // CSVReader nos permite leer el fichero CSV linea a linea
         try (CSVReader reader = new CSVReaderBuilder(
-                new FileReader("Precios_EESS_terrestres.csv"))
+                new FileReader(CSV))
                 .withCSVParser(new CSVParserBuilder()
                         .withSeparator(';').build()).build()) {
 
@@ -341,7 +337,7 @@ public class MySqlApplicationIntake {
             return localities;
 
         } catch (IOException e) {
-            log.error("Error al leer el fichero Precios_EESS_terrestres", e);
+            log.error("Error al leer el fichero" + CSV, e);
             throw new RuntimeException(e);
         } catch (CsvValidationException e) {
             throw new RuntimeException(e);
@@ -399,7 +395,7 @@ public class MySqlApplicationIntake {
         // Try-with-resources. Se cierra el reader automáticamente al salir del bloque try
         // CSVReader nos permite leer el fichero CSV linea a linea
         try (CSVReader reader = new CSVReaderBuilder(
-                new FileReader("Precios_EESS_terrestres.csv"))
+                new FileReader(CSV))
                 .withCSVParser(new CSVParserBuilder()
                         .withSeparator(';').build()).build()) {
 
@@ -429,7 +425,7 @@ public class MySqlApplicationIntake {
             return operators;
 
         } catch (IOException e) {
-            log.error("Error al leer el fichero Precios_EESS_terrestres", e);
+            log.error("Error al leer el fichero" + CSV, e);
             throw new RuntimeException(e);
         } catch (CsvValidationException e) {
             throw new RuntimeException(e);
@@ -487,7 +483,7 @@ public class MySqlApplicationIntake {
         // Try-with-resources. Se cierra el reader automáticamente al salir del bloque try
         // CSVReader nos permite leer el fichero CSV linea a linea
         try (CSVReader reader = new CSVReaderBuilder(
-                new FileReader("Precios_EESS.csv"))
+                new FileReader(CSV))
                 .withCSVParser(new CSVParserBuilder()
                         .withSeparator(';').build()).build()) {
 
@@ -575,7 +571,7 @@ public class MySqlApplicationIntake {
         // Try-with-resources. Se cierra el reader automáticamente al salir del bloque try
         // CSVReader nos permite leer el fichero CSV linea a linea
         try (CSVReader reader = new CSVReaderBuilder(
-                new FileReader("Precios_EESS_terrestres.csv"))
+                new FileReader(CSV))
                 .withCSVParser(new CSVParserBuilder()
                         .withSeparator(';').build()).build()) {
 
@@ -583,19 +579,12 @@ public class MySqlApplicationIntake {
             reader.skip(1);
             String[] nextLine;
 
-            SimpleDateFormat format = new SimpleDateFormat("dd-MM-yy HH:mm");
+            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yy HH:mm");
 
             // Leemos el fichero linea a linea
             while((nextLine = reader.readNext()) != null) {
 
                 MySqlStations station = null;
-
-                for (MySqlStations compare : stations) {
-                    if (compare.equals(station)) {
-                        station = compare;
-                        break;
-                    }
-                }
 
                 if (station == null) {
                     // Buscamos en la lista de localidades para obtener el código.
@@ -603,6 +592,7 @@ public class MySqlApplicationIntake {
                     for (MySqlLocalities localitie : localities) {
                         if (localitie.getName().equals(nextLine[2])) {
                             id_loc = localitie.getLoc_id();
+                            break;
                         }
                     }
 
@@ -611,6 +601,7 @@ public class MySqlApplicationIntake {
                     for (MySqlOperators operator : operators) {
                         if (operator.getName().equals(nextLine[25])) {
                             id_op = operator.getOp_id();
+                            break;
                         }
                     }
 
@@ -621,18 +612,10 @@ public class MySqlApplicationIntake {
                             nextLine[3],    // Cogemos el dato de la columna CP.
                             nextLine[4],    // Cogemos el dato de la columna Dirección.
                             nextLine[5],    // Cogemos el dato de la columna Margen.
-                            Float.parseFloat(nextLine[6]),  // Cogemos el dato de la columna Longitud.
-                            Float.parseFloat(nextLine[7]);  // Cogemos el dato de la columna Latitud.
-                            if (nextLine[8].isEmpty()) {}
-                            else {
-                                new Date(format.parse(nextLine[8]).getTime());  // Cogemos el dato de la columna Toma de datos.
-                            }
-                            if (nextLine[26].isEmpty()) {
-                                nextLine[26] = "T";
-                            }
-                            else {
-                                nextLine[26] = "M";
-                            }
+                            nextLine[6].isEmpty()?null:Float.parseFloat(nextLine[6].replace(",", ".")),  // Cogemos el dato de la columna Longitud.
+                            nextLine[7].isEmpty()?null:Float.parseFloat(nextLine[7].replace(",", ".")),  // Cogemos el dato de la columna Latitud.
+                            nextLine[8].isEmpty()?null:new Date(format.parse(nextLine[8]).getTime()),
+                            nextLine[26].isEmpty()?"M":"T", // Cogemos el dato de la columna Tipo.
                             nextLine[27]    // Cogemos el dato de la columna Horario.
                     );
                     stations.add(station);
@@ -641,7 +624,7 @@ public class MySqlApplicationIntake {
             return stations;
 
         } catch (IOException e) {
-            log.error("Error al leer el fichero Precios_EESS_terrestres", e);
+            log.error("Error al leer el fichero" + CSV, e);
             throw new RuntimeException(e);
         } catch (CsvValidationException e) {
             throw new RuntimeException(e);
@@ -653,7 +636,7 @@ public class MySqlApplicationIntake {
     private static void intakeStations(Connection connection, List<MySqlStations> stations) throws SQLException {
 
         // Consultas de la tabla provincias
-        String selectSqlStations = "SELECT COUNT(*) FROM stations WHERE addres = ? and margin = ? and longitude = ? and latitude = ?";
+        String selectSqlStations = "SELECT COUNT(*) FROM stations WHERE address = ? and margin = ? and longitude = ? and latitude = ?";
         String insertSqlStations = "INSERT INTO stations (st_id, loc_id, op_id, cp, address, margin, longitude, latitude, price_date, type, schedule)"
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
