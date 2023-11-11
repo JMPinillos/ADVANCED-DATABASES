@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -26,8 +27,8 @@ public class MySqlApplicationIntake {
     private static List<MySqlLocalities> localities = new LinkedList<>();
     private static List<MySqlOperators> operators = new LinkedList<>();
     private static List<MySqlFuels> fuels = new LinkedList<>();
+    private static List<MySqlStations> stations = new LinkedList<>();
     private static List<MySqlPrices> prices = new LinkedList<>();
-    private static List<MySqlFuelStations> fuelStations = new LinkedList<>();
 
     public static void main(String[] args) {
 
@@ -42,8 +43,8 @@ public class MySqlApplicationIntake {
             //municipalities = readDataMunicipalities();
             //localities = readDataLocalities();
             //operators = readDataOperators();
-            fuels = readDataFuels();
-            //stations = readDataStations();
+            //fuels = readDataFuels();
+            stations = readDataStations();
             //prices = readDataPrices();
 
             // Introducimos los datos en la base de datos
@@ -51,8 +52,8 @@ public class MySqlApplicationIntake {
             //intakeMunicipalities(connection, municipalities);
             //intakeLocalities(connection, localities);
             //intakeOperators(connection, operators);
-            intakeFuels(connection, fuels);
-            //intakeFuelStations(connection, fuelStations);
+            //intakeFuels(connection, fuels);
+            intakeStations(connection, stations);
             //intakePrices(connection, prices);
 
         } catch (Exception e) {
@@ -361,7 +362,7 @@ public class MySqlApplicationIntake {
                 MySqlOperators operator = null;
 
                 for (MySqlOperators compare : operators) {
-                    if (compare.getName().equals(nextLine[24])) {
+                    if (compare.getName().equals(nextLine[25])) {
                         operator = compare;
                         break;
                     }
@@ -370,7 +371,7 @@ public class MySqlApplicationIntake {
                 if (operator == null) {
                     operator = new MySqlOperators (
                             (operators.size()+1),   // ID segun el contenido de la tabla.
-                            nextLine[24]             // Cogemos el dato de la columna provincia.
+                            nextLine[25]             // Cogemos el dato de la columna provincia.
                     );
                     operators.add(operator);
                 }
@@ -436,14 +437,14 @@ public class MySqlApplicationIntake {
         // Try-with-resources. Se cierra el reader automáticamente al salir del bloque try
         // CSVReader nos permite leer el fichero CSV linea a linea
         try (CSVReader reader = new CSVReaderBuilder(
-                new FileReader("Precios_EESS_terrestres.csv"))
+                new FileReader("Precios_EESS.csv"))
                 .withCSVParser(new CSVParserBuilder()
                         .withSeparator(';').build()).build()) {
 
             String[] nextLine = reader.readNext();
             int i = 9;
 
-            while(i <= 23) {
+            while(i <= 24) {
 
                 MySqlFuels fuel = null;
 
@@ -513,6 +514,131 @@ public class MySqlApplicationIntake {
 
         // Ejecutamos el batch final
         insertStatementFuels.executeBatch();
+
+        // Hacemos commit y volvemos a activar el autocommit
+        connection.commit();
+        connection.setAutoCommit(true);
+    }
+
+    private static List<MySqlStations> readDataStations() {
+
+        // Try-with-resources. Se cierra el reader automáticamente al salir del bloque try
+        // CSVReader nos permite leer el fichero CSV linea a linea
+        try (CSVReader reader = new CSVReaderBuilder(
+                new FileReader("Precios_EESS_terrestres.csv"))
+                .withCSVParser(new CSVParserBuilder()
+                        .withSeparator(';').build()).build()) {
+
+            // Saltamos la primera linea, que contiene los nombres de las columnas del CSV
+            reader.skip(1);
+            String[] nextLine;
+
+            SimpleDateFormat format = new SimpleDateFormat("dd-MM-yy HH:mm");
+
+            // Leemos el fichero linea a linea
+            while((nextLine = reader.readNext()) != null) {
+
+                MySqlStations station = null;
+
+                for (MySqlStations compare : stations) {
+                    if (compare.equals(station)) {
+                        station = compare;
+                        break;
+                    }
+                }
+
+                if (station == null) {
+                    // Buscamos en la lista de localidades para obtener el código.
+                    int id_loc = 0;
+                    for (MySqlLocalities localitie : localities) {
+                        if (localitie.getName().equals(nextLine[2])) {
+                            id_loc = localitie.getLoc_id();
+                        }
+                    }
+
+                    // Buscamos en la lista de operadores para obtener el código.
+                    int id_op = 0;
+                    for (MySqlOperators operator : operators) {
+                        if (operator.getName().equals(nextLine[24])) {
+                            id_op = operator.getOp_id();
+                        }
+                    }
+
+                    // Buscamos en la lista de combustibles para obtener el código.
+                    int id_fuel = 0;
+                    for (MySqlFuels fuel : fuels) {
+                        if (fuel.getName().equals(nextLine[1])) {
+                            id_fuel = fuel.getFuel_id();
+                        }
+                    }
+
+                    station = new MySqlStations(
+                            (stations.size()+1),  // ID segun el contenido de la tabla.
+                            id_loc,
+                            id_op,
+                            id_fuel,
+                            Integer.parseInt(nextLine[3]),  // Cogemos el dato de la columna CP.
+                            nextLine[4],  // Cogemos el dato de la columna Dirección.
+                            nextLine[5],  // Cogemos el dato de la columna Margen.
+                            Integer.parseInt(nextLine[6]),  // Cogemos el dato de la columna Longitud.
+                            Integer.parseInt(nextLine[7]),  // Cogemos el dato de la columna Latitud.
+                            new Date(format.parse(nextLine[8]).getTime()),  // Cogemos el dato de la columna Toma de datos.
+                            nextLine[26],  // Cogemos el dato de la columna Tipo.
+                            nextLine[27]  // Cogemos el dato de la columna Horario.
+                    );
+                    stations.add(station);
+                }
+            }
+            return stations;
+
+        } catch (IOException e) {
+            log.error("Error al leer el fichero Precios_EESS_terrestres", e);
+            throw new RuntimeException(e);
+        } catch (CsvValidationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static void intakeStations(Connection connection, List<MySqlProvinces> provinces) throws SQLException {
+
+        // Consultas de la tabla provincias
+        String selectSqlProvinces = "SELECT COUNT(*) FROM provinces WHERE name = ?";
+        String insertSqlProvinces = "INSERT INTO provinces (pro_id, name)"
+                + "VALUES (?, ?)";
+
+        int lote = 5;
+        int contador = 0;
+
+        // Preparamos las consultas, una unica vez para poder reutilizarlas en el batch
+        PreparedStatement insertStatementProvinces = connection.prepareStatement(insertSqlProvinces);
+
+        // Desactivamos el autocommit para poder ejecutar el batch y hacer commit al final
+        connection.setAutoCommit(false);
+
+        for (MySqlProvinces province : provinces) {
+
+            // Comprobamos si la provincia existe
+            PreparedStatement selectStatementProvinces = connection.prepareStatement(selectSqlProvinces);
+            selectStatementProvinces.setString(1, province.getName()); // Nombre de la provincia
+
+            ResultSet resultSet = selectStatementProvinces.executeQuery();
+            resultSet.next(); // Nos movemos a la primera fila
+            int rowCount = resultSet.getInt(1);
+
+            // Si no existe, insertamos. Si existe, no hacemos nada.
+            if(rowCount == 0) {
+                fillInsertStatementProvinces(insertStatementProvinces, province);
+                insertStatementProvinces.addBatch();
+            }
+
+            // Ejecutamos el batch cada lote de registros
+            if (++contador % lote == 0) {
+                insertStatementProvinces.executeBatch();
+            }
+        }
+
+        // Ejecutamos el batch final
+        insertStatementProvinces.executeBatch();
 
         // Hacemos commit y volvemos a activar el autocommit
         connection.commit();
