@@ -11,14 +11,14 @@ public class MySqlStations {
     private int station_id;
     private int loc_id;
     private int op_id;
-    private int fuel_id;
-    private int cp;
+    private String cp;
+    private String address;
+    private String margen;
     private float longitud;
     private float latitud;
-    private enum margen {D,I,N};
-    private String address;
     private Date price_date;
+    private String tipo;
     private String horario;
-    private enum tipo {P,M};
+
 
 }

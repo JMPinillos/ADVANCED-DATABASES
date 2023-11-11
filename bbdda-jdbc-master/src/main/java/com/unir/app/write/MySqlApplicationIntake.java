@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.*;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.LinkedList;
 import java.util.List;
@@ -47,6 +48,9 @@ public class MySqlApplicationIntake {
             stations = readDataStations();
             //prices = readDataPrices();
 
+            // Borramos los datos de la base de datos
+            eraseDB();
+
             // Introducimos los datos en la base de datos
             //intakeProvinces(connection, provinces);
             //intakeMunicipalities(connection, municipalities);
@@ -59,6 +63,52 @@ public class MySqlApplicationIntake {
         } catch (Exception e) {
             log.error("Error al tratar con la base de datos", e);
         }
+    }
+
+    private static void eraseDB(Connection connection) {
+
+        // Consultas de la tabla provincias
+        String selectSqlProvinces = "SELECT COUNT(*) FROM provinces WHERE name = ?";
+        String insertSqlProvinces = "INSERT INTO provinces (pro_id, name)"
+                + "VALUES (?, ?)";
+
+        int lote = 5;
+        int contador = 0;
+
+        // Preparamos las consultas, una unica vez para poder reutilizarlas en el batch
+        PreparedStatement insertStatementProvinces = connection.prepareStatement(insertSqlProvinces);
+
+        // Desactivamos el autocommit para poder ejecutar el batch y hacer commit al final
+        connection.setAutoCommit(false);
+
+        for (MySqlProvinces province : provinces) {
+
+            // Comprobamos si la provincia existe
+            PreparedStatement selectStatementProvinces = connection.prepareStatement(selectSqlProvinces);
+            selectStatementProvinces.setString(1, province.getName()); // Nombre de la provincia
+
+            ResultSet resultSet = selectStatementProvinces.executeQuery();
+            resultSet.next(); // Nos movemos a la primera fila
+            int rowCount = resultSet.getInt(1);
+
+            // Si no existe, insertamos. Si existe, no hacemos nada.
+            if(rowCount == 0) {
+                fillInsertStatementProvinces(insertStatementProvinces, province);
+                insertStatementProvinces.addBatch();
+            }
+
+            // Ejecutamos el batch cada lote de registros
+            if (++contador % lote == 0) {
+                insertStatementProvinces.executeBatch();
+            }
+        }
+
+        // Ejecutamos el batch final
+        insertStatementProvinces.executeBatch();
+
+        // Hacemos commit y volvemos a activar el autocommit
+        connection.commit();
+        connection.setAutoCommit(true);
     }
 
     private static List<MySqlProvinces> readDataProvinces() {
@@ -371,7 +421,7 @@ public class MySqlApplicationIntake {
                 if (operator == null) {
                     operator = new MySqlOperators (
                             (operators.size()+1),   // ID segun el contenido de la tabla.
-                            nextLine[25]             // Cogemos el dato de la columna provincia.
+                            nextLine[25]            // Cogemos el dato de la columna provincia.
                     );
                     operators.add(operator);
                 }
@@ -559,16 +609,8 @@ public class MySqlApplicationIntake {
                     // Buscamos en la lista de operadores para obtener el código.
                     int id_op = 0;
                     for (MySqlOperators operator : operators) {
-                        if (operator.getName().equals(nextLine[24])) {
+                        if (operator.getName().equals(nextLine[25])) {
                             id_op = operator.getOp_id();
-                        }
-                    }
-
-                    // Buscamos en la lista de combustibles para obtener el código.
-                    int id_fuel = 0;
-                    for (MySqlFuels fuel : fuels) {
-                        if (fuel.getName().equals(nextLine[1])) {
-                            id_fuel = fuel.getFuel_id();
                         }
                     }
 
@@ -576,15 +618,22 @@ public class MySqlApplicationIntake {
                             (stations.size()+1),  // ID segun el contenido de la tabla.
                             id_loc,
                             id_op,
-                            id_fuel,
-                            Integer.parseInt(nextLine[3]),  // Cogemos el dato de la columna CP.
-                            nextLine[4],  // Cogemos el dato de la columna Dirección.
-                            nextLine[5],  // Cogemos el dato de la columna Margen.
-                            Integer.parseInt(nextLine[6]),  // Cogemos el dato de la columna Longitud.
-                            Integer.parseInt(nextLine[7]),  // Cogemos el dato de la columna Latitud.
-                            new Date(format.parse(nextLine[8]).getTime()),  // Cogemos el dato de la columna Toma de datos.
-                            nextLine[26],  // Cogemos el dato de la columna Tipo.
-                            nextLine[27]  // Cogemos el dato de la columna Horario.
+                            nextLine[3],    // Cogemos el dato de la columna CP.
+                            nextLine[4],    // Cogemos el dato de la columna Dirección.
+                            nextLine[5],    // Cogemos el dato de la columna Margen.
+                            Float.parseFloat(nextLine[6]),  // Cogemos el dato de la columna Longitud.
+                            Float.parseFloat(nextLine[7]);  // Cogemos el dato de la columna Latitud.
+                            if (nextLine[8].isEmpty()) {}
+                            else {
+                                new Date(format.parse(nextLine[8]).getTime());  // Cogemos el dato de la columna Toma de datos.
+                            }
+                            if (nextLine[26].isEmpty()) {
+                                nextLine[26] = "T";
+                            }
+                            else {
+                                nextLine[26] = "M";
+                            }
+                            nextLine[27]    // Cogemos el dato de la columna Horario.
                     );
                     stations.add(station);
                 }
@@ -596,49 +645,54 @@ public class MySqlApplicationIntake {
             throw new RuntimeException(e);
         } catch (CsvValidationException e) {
             throw new RuntimeException(e);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    private static void intakeStations(Connection connection, List<MySqlProvinces> provinces) throws SQLException {
+    private static void intakeStations(Connection connection, List<MySqlStations> stations) throws SQLException {
 
         // Consultas de la tabla provincias
-        String selectSqlProvinces = "SELECT COUNT(*) FROM provinces WHERE name = ?";
-        String insertSqlProvinces = "INSERT INTO provinces (pro_id, name)"
-                + "VALUES (?, ?)";
+        String selectSqlStations = "SELECT COUNT(*) FROM stations WHERE addres = ? and margin = ? and longitude = ? and latitude = ?";
+        String insertSqlStations = "INSERT INTO stations (st_id, loc_id, op_id, cp, address, margin, longitude, latitude, price_date, type, schedule)"
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         int lote = 5;
         int contador = 0;
 
         // Preparamos las consultas, una unica vez para poder reutilizarlas en el batch
-        PreparedStatement insertStatementProvinces = connection.prepareStatement(insertSqlProvinces);
+        PreparedStatement insertStatementStations = connection.prepareStatement(insertSqlStations);
 
         // Desactivamos el autocommit para poder ejecutar el batch y hacer commit al final
         connection.setAutoCommit(false);
 
-        for (MySqlProvinces province : provinces) {
+        for (MySqlStations station : stations) {
 
             // Comprobamos si la provincia existe
-            PreparedStatement selectStatementProvinces = connection.prepareStatement(selectSqlProvinces);
-            selectStatementProvinces.setString(1, province.getName()); // Nombre de la provincia
+            PreparedStatement selectStatementStations = connection.prepareStatement(selectSqlStations);
+            selectStatementStations.setString(1, station.getAddress()); // Dirección
+            selectStatementStations.setString(2, station.getMargen());  // Margen
+            selectStatementStations.setFloat(3, station.getLongitud()); // Longitud
+            selectStatementStations.setFloat(4, station.getLatitud());  // Latitud
 
-            ResultSet resultSet = selectStatementProvinces.executeQuery();
+            ResultSet resultSet = selectStatementStations.executeQuery();
             resultSet.next(); // Nos movemos a la primera fila
             int rowCount = resultSet.getInt(1);
 
             // Si no existe, insertamos. Si existe, no hacemos nada.
             if(rowCount == 0) {
-                fillInsertStatementProvinces(insertStatementProvinces, province);
-                insertStatementProvinces.addBatch();
+                fillInsertStatementStations(insertStatementStations, station);
+                insertStatementStations.addBatch();
             }
 
             // Ejecutamos el batch cada lote de registros
             if (++contador % lote == 0) {
-                insertStatementProvinces.executeBatch();
+                insertStatementStations.executeBatch();
             }
         }
 
         // Ejecutamos el batch final
-        insertStatementProvinces.executeBatch();
+        insertStatementStations.executeBatch();
 
         // Hacemos commit y volvemos a activar el autocommit
         connection.commit();
@@ -678,6 +732,21 @@ public class MySqlApplicationIntake {
         statement.setInt(1, fuels.getFuel_id());
         statement.setString(2, fuels.getName());
     }
+
+    private static void fillInsertStatementStations(PreparedStatement statement, MySqlStations stations) throws SQLException {
+        statement.setInt(1, stations.getStation_id());
+        statement.setInt(2, stations.getLoc_id());
+        statement.setInt(3, stations.getOp_id());
+        statement.setString(4, stations.getCp());
+        statement.setString(5, stations.getAddress());
+        statement.setString(6, stations.getMargen());
+        statement.setFloat(7, stations.getLongitud());
+        statement.setFloat(8, stations.getLatitud());
+        statement.setDate(9, stations.getPrice_date());
+        statement.setString(10, stations.getTipo());
+        statement.setString(11, stations.getHorario());
+    }
+
 
     /**
      * Devuelve el último id de una columna de una tabla.
