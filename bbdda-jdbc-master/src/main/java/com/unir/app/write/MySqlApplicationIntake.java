@@ -362,7 +362,7 @@ public class MySqlApplicationIntake {
 
         for (MySqlLocalities localitie : localities) {
 
-            // Comprobamos si el municipio existe
+            // Comprobamos si la localidad existe
             PreparedStatement selectStatementLocalities = connection.prepareStatement(selectSqlLocalities);
             selectStatementLocalities.setString(1, localitie.getName()); // Nombre de la localidad
 
@@ -417,7 +417,7 @@ public class MySqlApplicationIntake {
                 if (operator == null) {
                     operator = new MySqlOperators (
                             (operators.size()+1),   // ID segun el contenido de la tabla.
-                            nextLine[25]            // Cogemos el dato de la columna provincia.
+                            nextLine[25]            // Cogemos el dato de la columna rotulo.
                     );
                     operators.add(operator);
                 }
@@ -450,7 +450,7 @@ public class MySqlApplicationIntake {
 
         for (MySqlOperators operator : operators) {
 
-            // Comprobamos si el municipio existe
+            // Comprobamos si el operador existe
             PreparedStatement selectStatementOperators = connection.prepareStatement(selectSqlOperators);
             selectStatementOperators.setString(1, operator.getName()); // Nombre del operador
 
@@ -538,7 +538,7 @@ public class MySqlApplicationIntake {
 
         for (MySqlFuels fuel : fuels) {
 
-            // Comprobamos si el municipio existe
+            // Comprobamos si el combustible existe
             PreparedStatement selectStatementFuels = connection.prepareStatement(selectSqlFuels);
             selectStatementFuels.setString(1, fuel.getName()); // Nombre del operador
 
@@ -586,23 +586,31 @@ public class MySqlApplicationIntake {
 
                 MySqlStations station = null;
 
+            /*    for (MySqlStations compare : stations) {
+                    if (compare.getLongitud().equals(Float.parseFloat(nextLine[6])) && compare.getLatitud().equals(Float.parseFloat(nextLine[7]))) {
+                        station = compare;
+                        break;
+                    }
+                }
+            */
                 if (station == null) {
                     // Buscamos en la lista de localidades para obtener el código.
                     int id_loc = 0;
                     for (MySqlLocalities localitie : localities) {
                         if (localitie.getName().equals(nextLine[2])) {
                             id_loc = localitie.getLoc_id();
-                            break;
                         }
                     }
 
                     // Buscamos en la lista de operadores para obtener el código.
+
                     int id_op = 0;
                     for (MySqlOperators operator : operators) {
                         if (operator.getName().equals(nextLine[25])) {
                             id_op = operator.getOp_id();
-                            log.info(String.valueOf(id_op));
-                            break;
+                            if (id_op > 4059){
+                                log.info(String.valueOf(id_op));
+                            }
                         }
                     }
 
@@ -652,7 +660,7 @@ public class MySqlApplicationIntake {
 
         for (MySqlStations station : stations) {
 
-            // Comprobamos si la provincia existe
+            // Comprobamos si la estación existe
             PreparedStatement selectStatementStations = connection.prepareStatement(selectSqlStations);
             selectStatementStations.setString(1, station.getAddress()); // Dirección
             selectStatementStations.setString(2, station.getMargen());  // Margen
