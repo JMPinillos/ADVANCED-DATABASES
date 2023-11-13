@@ -14,6 +14,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.LinkedList;
 import java.util.List;
+import java.text.Normalizer;
 
 /**
  * La version para Oracle seria muy similar a esta, cambiando únicamente el Driver y los datos de sentencias.
@@ -51,7 +52,7 @@ public class MySqlApplicationIntake {
 
             // Borramos los datos de la base de datos
             //eraseDB();
-            log.info("BASE DE DATOS " + DATABASE + " BORRADA");
+            //log.info("BASE DE DATOS " + DATABASE + " BORRADA");
 
             // Introducimos los datos en la base de datos
             intakeProvinces(connection, provinces);
