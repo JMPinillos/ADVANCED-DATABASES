@@ -325,15 +325,15 @@ public class MySqlApplicationIntake {
 
                 if (localitie == null) {
                     // Buscamos en la lista de municipios para obtener el código.
-                    int id_pro = 0;
+                    int id_mun = 0;
                     for (MySqlMunicipalities municipalitie : municipalities) {
                         if (municipalitie.getName().equals(nextLine[1])) {
-                            id_pro = municipalitie.getMun_id();
+                            id_mun = municipalitie.getMun_id();
                         }
                     }
                     localitie = new MySqlLocalities(
                             (localities.size()+1),  // ID segun el contenido de la tabla.
-                            id_pro,
+                            id_mun,
                             nextLine[2]                 // Cogemos el dato de la columna localidad.
                     );
                     localities.add(localitie);
@@ -591,13 +591,13 @@ public class MySqlApplicationIntake {
 
                 MySqlStations station = null;
 
-            /*    for (MySqlStations compare : stations) {
-                    if (compare.getLongitud().equals(Float.parseFloat(nextLine[6])) && compare.getLatitud().equals(Float.parseFloat(nextLine[7]))) {
+                for (MySqlStations compare : stations) {
+                    if (compare.getAddress().equals(nextLine[4]) && compare.getMargen().equals(nextLine[5]) && compare.getMargen().equals(nextLine[27])) {
                         station = compare;
                         break;
                     }
                 }
-            */
+
                 if (station == null) {
                     // Buscamos en la lista de localidades para obtener el código.
                     int id_loc = 0;
