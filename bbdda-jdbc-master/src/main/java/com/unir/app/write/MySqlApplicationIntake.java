@@ -413,7 +413,7 @@ public class MySqlApplicationIntake {
                 MySqlOperators operator = null;
 
                 for (MySqlOperators compare : operators) {
-                    if (compare.getName().equals(nextLine[25])) {
+                    if (compare.getName().contentEquals(nextLine[25])) {
                         operator = compare;
                         break;
                     }
