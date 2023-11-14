@@ -41,6 +41,10 @@ public class MySqlApplicationIntake {
 
             log.info("Conexión establecida con la base de datos " + DATABASE);
 
+            // Borramos los datos de la base de datos
+            eraseDB(connection);
+            log.info("DATOS DE LA BASE DE DATOS " + DATABASE + " BORRADOS");
+
             // Leemos los datos del fichero CSV
             provinces = readDataProvinces();
             municipalities = readDataMunicipalities();
@@ -48,11 +52,7 @@ public class MySqlApplicationIntake {
             operators = readDataOperators();
             fuels = readDataFuels();
             stations = readDataStations();
-            //prices = readDataPrices();
-
-            // Borramos los datos de la base de datos
-            //eraseDB();
-            //log.info("BASE DE DATOS " + DATABASE + " BORRADA");
+          //  prices = readDataPrices();
 
             // Introducimos los datos en la base de datos
             intakeProvinces(connection, provinces);
@@ -68,50 +68,31 @@ public class MySqlApplicationIntake {
             intakeStations(connection, stations);
             log.info("ESTACIONES DE SERVICIO INSERTADAS");
             //intakePrices(connection, prices);
+            //log.info("PRECIOS INSERTADOS");
 
         } catch (Exception e) {
             log.error("Error al tratar con la base de datos", e);
         }
     }
- /*
+
     private static void eraseDB(Connection connection) {
 
-        // Borramos la base de datos
-        String deleteSqlProvinces = "DELETE FROM provinces";
-        String deleteSqlMunicipalities = "DELETE FROM municipalities";
-        String deleteSqlLocalities = "DELETE FROM localities";
-        String deleteSqlOperators = "DELETE FROM operators";
-        String deleteSqlFuels = "DELETE FROM fuels";
-        //String deleteSqlStations = "DELETE FROM provinces";
-        //String deleteSqlPrices = "DELETE FROM provinces";
+        try {
+            Statement deleteData = connection.createStatement();
 
-
-        // Preparamos las consultas, una unica vez para poder reutilizarlas en el batch
-        PreparedStatement deleteStatementProvinces = connection.prepareStatement(deleteSqlProvinces);
-        PreparedStatement deleteStatementMunicipalities = connection.prepareStatement(deleteSqlMunicipalities);
-        PreparedStatement deleteStatementLocalities = connection.prepareStatement(deleteSqlLocalities);
-        PreparedStatement deleteStatementOperators = connection.prepareStatement(deleteSqlOperators);
-        PreparedStatement deleteStatementFuels = connection.prepareStatement(deleteSqlFuels);
-        //PreparedStatement deleteStatementStations = connection.prepareStatement(deleteSqlStations);
-        //PreparedStatement deleteStatementPrices = connection.prepareStatement(deleteSqlPrices);
-
-        // Desactivamos el autocommit para poder ejecutar el batch y hacer commit al final
-        connection.setAutoCommit(false);
-
-        // Ejecutamos el batch final
-        //deleteStatementPrices.executeBatch();
-        //deleteStatementStations.executeBatch();
-        deleteStatementFuels.executeBatch();
-        deleteStatementOperators.executeBatch();
-        deleteStatementLocalities.executeBatch();
-        deleteStatementMunicipalities.executeBatch();
-        deleteStatementProvinces.executeBatch();
-
-        // Hacemos commit y volvemos a activar el autocommit
-        connection.commit();
-        connection.setAutoCommit(true);
+            // Borramos la base de datos
+            deleteData.executeUpdate("DELETE FROM prices");
+            deleteData.executeUpdate("DELETE FROM stations");
+            deleteData.executeUpdate("DELETE FROM fuels");
+            deleteData.executeUpdate("DELETE FROM operators");
+            deleteData.executeUpdate("DELETE FROM localities");
+            deleteData.executeUpdate("DELETE FROM municipalities");
+            deleteData.executeUpdate("DELETE FROM provinces");
+        } catch (SQLException e) {
+            log.error("ERROR AL VACIAR LA BASE DE DATOS", e);
+        }
     }
-*/
+
     private static List<MySqlProvinces> readDataProvinces() {
 
         // Try-with-resources. Se cierra el reader automáticamente al salir del bloque try
@@ -518,7 +499,7 @@ public class MySqlApplicationIntake {
             return fuels;
 
         } catch (IOException e) {
-            log.error("Error al leer el fichero Precios_EESS_terrestres", e);
+            log.error("Error al leer el fichero" + CSV, e);
             throw new RuntimeException(e);
         } catch (CsvValidationException e) {
             throw new RuntimeException(e);
@@ -545,7 +526,7 @@ public class MySqlApplicationIntake {
 
             // Comprobamos si el combustible existe
             PreparedStatement selectStatementFuels = connection.prepareStatement(selectSqlFuels);
-            selectStatementFuels.setString(1, fuel.getName()); // Nombre del operador
+            selectStatementFuels.setString(1, fuel.getName()); // Nombre del carburante
 
             ResultSet resultSet = selectStatementFuels.executeQuery();
             resultSet.next(); // Nos movemos a la primera fila
@@ -592,7 +573,7 @@ public class MySqlApplicationIntake {
                 MySqlStations station = null;
 
                 for (MySqlStations compare : stations) {
-                    if (compare.getAddress().equals(nextLine[4]) && compare.getMargen().equals(nextLine[5]) && compare.getMargen().equals(nextLine[27])) {
+                    if (compare.getAddress().equals(nextLine[4]) && compare.getMargen().equals(nextLine[5]) && compare.getHorario().equals(nextLine[27])) {
                         station = compare;
                         break;
                     }
@@ -608,7 +589,6 @@ public class MySqlApplicationIntake {
                     }
 
                     // Buscamos en la lista de operadores para obtener el código.
-
                     int id_op = 0;
                     for (MySqlOperators operator : operators) {
                         if (operator.getName().equals(nextLine[25])) {
@@ -678,6 +658,95 @@ public class MySqlApplicationIntake {
         connection.setAutoCommit(true);
     }
 
+    private static List<MySqlPrices> readDataPrices() {
+
+        // Try-with-resources. Se cierra el reader automáticamente al salir del bloque try
+        // CSVReader nos permite leer el fichero CSV linea a linea
+        try (CSVReader reader = new CSVReaderBuilder(
+                new FileReader(CSV))
+                .withCSVParser(new CSVParserBuilder()
+                        .withSeparator(';').build()).build()) {
+
+            // Saltamos la primera linea, que contiene los nombres de las columnas del CSV
+            reader.skip(1);
+            String[] nextLine;
+
+            MySqlPrices price = null;
+
+            // Leemos el fichero linea a linea
+            while((nextLine = reader.readNext()) != null) {
+
+                int i = 9;
+                int id_fuel = 1;
+
+                while (i <= 24) {
+
+                        if (nextLine[i].isEmpty()) {
+
+                        } else{
+                            // Buscamos en la lista de estaciones de servicio para obtener el código.
+                            int id_st = 0;
+                            for (MySqlStations station : stations) {
+                                if (station.getAddress().equals(nextLine[4]) && station.getMargen().equals(nextLine[5]) && station.getHorario().equals(nextLine[27])) {
+                                    id_st = station.getStation_id();
+                                }
+                            }
+
+                            price = new MySqlPrices(
+                                    id_st,
+                                    id_fuel,
+                                    Float.parseFloat(nextLine[i].replace(",", ".")) // Cogemos el dato del precio.                        );
+                            );
+                            prices.add(price);
+                        }
+                    i++;
+                    id_fuel++;
+                }
+            }
+            return prices;
+
+        } catch (IOException e) {
+            log.error("Error al leer el fichero" + CSV, e);
+            throw new RuntimeException(e);
+        } catch (CsvValidationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static void intakePrices(Connection connection, List<MySqlPrices> prices) throws SQLException {
+
+        // Consultas de la tabla provincias
+        String insertSqlPrice = "INSERT INTO prices (st_id, fuel_id, price)"
+                + "VALUES (?, ?, ?)";
+
+        int lote = 5;
+        int contador = 0;
+
+        // Preparamos las consultas, una unica vez para poder reutilizarlas en el batch
+        PreparedStatement insertStatementPrices = connection.prepareStatement(insertSqlPrice);
+
+        // Desactivamos el autocommit para poder ejecutar el batch y hacer commit al final
+        connection.setAutoCommit(false);
+
+        for (MySqlPrices price : prices) {
+
+            fillInsertStatementPrices(insertStatementPrices, price);
+            insertStatementPrices.addBatch();
+
+            // Ejecutamos el batch cada lote de registros
+            if (++contador % lote == 0) {
+                insertStatementPrices.executeBatch();
+            }
+        }
+
+        // Ejecutamos el batch final
+        insertStatementPrices.executeBatch();
+
+        // Hacemos commit y volvemos a activar el autocommit
+        connection.commit();
+        connection.setAutoCommit(true);
+    }
+
     private static void fillInsertStatementProvinces(PreparedStatement statement, MySqlProvinces provinces) throws SQLException {
         statement.setInt(1, provinces.getPro_id());
         statement.setString(2, provinces.getName());
@@ -717,5 +786,11 @@ public class MySqlApplicationIntake {
         statement.setDate(9, stations.getPrice_date());
         statement.setString(10, stations.getTipo());
         statement.setString(11, stations.getHorario());
+    }
+
+    private static void fillInsertStatementPrices(PreparedStatement statement, MySqlPrices prices) throws SQLException {
+        statement.setInt(1, prices.getSt_id());
+        statement.setInt(2, prices.getFuel_id());
+        statement.setFloat(3, prices.getPrice());
     }
 }

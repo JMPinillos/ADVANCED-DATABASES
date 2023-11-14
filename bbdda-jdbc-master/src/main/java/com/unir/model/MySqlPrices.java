@@ -6,7 +6,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class MySqlPrices {
-    private int f_est_id;
+    private int st_id;
     private int fuel_id;
-    private String price;
+    private Float price;
 }
