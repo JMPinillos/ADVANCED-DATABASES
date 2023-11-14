@@ -509,7 +509,7 @@ public class MySqlApplicationIntake {
                 if (fuel == null) {
                     fuel = new MySqlFuels (
                             (fuels.size()+1),   // ID segun el contenido de la tabla.
-                            nextLine[i]             // Cogemos el dato de la columna provincia.
+                            nextLine[i]             // Cogemos el dato de la columna que contiene el nombre del carburante.
                     );
                     fuels.add(fuel);
                 }
