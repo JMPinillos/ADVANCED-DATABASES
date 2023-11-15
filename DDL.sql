@@ -1,3 +1,7 @@
+CREATE SCHEMA laboratorio_EESS COLLATE utf8b4_0900_ai_ci;
+
+use laboratorio_EESS;
+
 create table fuels
 (
     fuel_id int          not null
