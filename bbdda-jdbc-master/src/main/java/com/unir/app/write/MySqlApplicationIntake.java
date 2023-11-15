@@ -578,7 +578,7 @@ public class MySqlApplicationIntake {
                     Float longitud = nextLine[6].isEmpty()?0:Float.parseFloat(nextLine[6].replace(",", "."));
                     Float latitud = nextLine[7].isEmpty()?0:Float.parseFloat(nextLine[7].replace(",", "."));
 
-                    if (compare.getAddress().equals(nextLine[4]) && compare.getLongitud().equals(longitud) && compare.getLatitud().equals(latitud)) {
+                    if (compare.getAddress().equals(nextLine[4]) && compare.getMargen().equals(nextLine[5]) && compare.getLongitud().equals(longitud) && compare.getLatitud().equals(latitud)) {
                         station = compare;
                         break;
                     }
@@ -613,7 +613,7 @@ public class MySqlApplicationIntake {
                             nextLine[6].isEmpty()?0:Float.parseFloat(nextLine[6].replace(",", ".")),  // Cogemos el dato de la columna Longitud.
                             nextLine[7].isEmpty()?0:Float.parseFloat(nextLine[7].replace(",", ".")),  // Cogemos el dato de la columna Latitud.
                             nextLine[8].isEmpty()?null:new Date(format.parse(nextLine[8]).getTime()),
-                            nextLine[26].isEmpty()?"M":"T", // Cogemos el dato de la columna Tipo.
+                            nextLine[26].isEmpty()?"T":"M", // Cogemos el dato de la columna Tipo.
                             nextLine[27]    // Cogemos el dato de la columna Horario.
                     );
                     stations.add(station);
@@ -695,7 +695,7 @@ public class MySqlApplicationIntake {
                                 Float longitud = nextLine[6].isEmpty()?0:Float.parseFloat(nextLine[6].replace(",", "."));
                                 Float latitud = nextLine[7].isEmpty()?0:Float.parseFloat(nextLine[7].replace(",", "."));
 
-                                if (station.getAddress().equals(nextLine[4]) && station.getLongitud().equals(longitud) && station.getLatitud().equals(latitud)) {
+                                if (station.getAddress().equals(nextLine[4]) && station.getMargen().equals(nextLine[5]) && station.getLongitud().equals(longitud) && station.getLatitud().equals(latitud)) {
                                     id_st = station.getStation_id();
                                     break;
                                 }
