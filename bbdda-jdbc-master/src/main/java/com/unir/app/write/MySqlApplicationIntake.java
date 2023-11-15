@@ -16,10 +16,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.text.Normalizer;
 
-/**
- * La version para Oracle seria muy similar a esta, cambiando únicamente el Driver y los datos de sentencias.
- * La tabla de Oracle contiene muchas restricciones y triggers. Por simplicidad, usamos MySQL en este caso.
- */
 @Slf4j
 public class MySqlApplicationIntake {
 
