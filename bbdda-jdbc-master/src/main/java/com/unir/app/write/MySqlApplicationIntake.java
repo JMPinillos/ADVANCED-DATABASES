@@ -52,7 +52,7 @@ public class MySqlApplicationIntake {
             operators = readDataOperators();
             fuels = readDataFuels();
             stations = readDataStations();
-          //  prices = readDataPrices();
+            prices = readDataPrices();
 
             // Introducimos los datos en la base de datos
             intakeProvinces(connection, provinces);
@@ -67,8 +67,8 @@ public class MySqlApplicationIntake {
             log.info("COMBUSTIBLES INSERTADOS");
             intakeStations(connection, stations);
             log.info("ESTACIONES DE SERVICIO INSERTADAS");
-            //intakePrices(connection, prices);
-            //log.info("PRECIOS INSERTADOS");
+            intakePrices(connection, prices);
+            log.info("PRECIOS INSERTADOS");
 
         } catch (Exception e) {
             log.error("Error al tratar con la base de datos", e);
@@ -213,6 +213,7 @@ public class MySqlApplicationIntake {
                     for (MySqlProvinces province : provinces) {
                         if (province.getName().equals(nextLine[0])) {
                             id_pro = province.getPro_id();
+                            break;
                         }
                     }
                     municipalitie = new MySqlMunicipalities(
@@ -310,6 +311,7 @@ public class MySqlApplicationIntake {
                     for (MySqlMunicipalities municipalitie : municipalities) {
                         if (municipalitie.getName().equals(nextLine[1])) {
                             id_mun = municipalitie.getMun_id();
+                            break;
                         }
                     }
                     localitie = new MySqlLocalities(
@@ -573,7 +575,10 @@ public class MySqlApplicationIntake {
                 MySqlStations station = null;
 
                 for (MySqlStations compare : stations) {
-                    if (compare.getAddress().equals(nextLine[4]) && compare.getMargen().equals(nextLine[5]) && compare.getHorario().equals(nextLine[27])) {
+                    Float longitud = nextLine[6].isEmpty()?0:Float.parseFloat(nextLine[6].replace(",", "."));
+                    Float latitud = nextLine[7].isEmpty()?0:Float.parseFloat(nextLine[7].replace(",", "."));
+
+                    if (compare.getAddress().equals(nextLine[4]) && compare.getLongitud().equals(longitud) && compare.getLatitud().equals(latitud)) {
                         station = compare;
                         break;
                     }
@@ -585,6 +590,7 @@ public class MySqlApplicationIntake {
                     for (MySqlLocalities localitie : localities) {
                         if (localitie.getName().equals(nextLine[2])) {
                             id_loc = localitie.getLoc_id();
+                            break;
                         }
                     }
 
@@ -593,6 +599,7 @@ public class MySqlApplicationIntake {
                     for (MySqlOperators operator : operators) {
                         if (operator.getName().equals(nextLine[25])) {
                             id_op = operator.getOp_id();
+                            break;
                         }
                     }
 
@@ -671,8 +678,6 @@ public class MySqlApplicationIntake {
             reader.skip(1);
             String[] nextLine;
 
-            MySqlPrices price = null;
-
             // Leemos el fichero linea a linea
             while((nextLine = reader.readNext()) != null) {
 
@@ -687,12 +692,16 @@ public class MySqlApplicationIntake {
                             // Buscamos en la lista de estaciones de servicio para obtener el código.
                             int id_st = 0;
                             for (MySqlStations station : stations) {
-                                if (station.getAddress().equals(nextLine[4]) && station.getMargen().equals(nextLine[5]) && station.getHorario().equals(nextLine[27])) {
+                                Float longitud = nextLine[6].isEmpty()?0:Float.parseFloat(nextLine[6].replace(",", "."));
+                                Float latitud = nextLine[7].isEmpty()?0:Float.parseFloat(nextLine[7].replace(",", "."));
+
+                                if (station.getAddress().equals(nextLine[4]) && station.getLongitud().equals(longitud) && station.getLatitud().equals(latitud)) {
                                     id_st = station.getStation_id();
+                                    break;
                                 }
                             }
 
-                            price = new MySqlPrices(
+                            MySqlPrices price = new MySqlPrices(
                                     id_st,
                                     id_fuel,
                                     Float.parseFloat(nextLine[i].replace(",", ".")) // Cogemos el dato del precio.                        );
@@ -716,7 +725,7 @@ public class MySqlApplicationIntake {
     private static void intakePrices(Connection connection, List<MySqlPrices> prices) throws SQLException {
 
         // Consultas de la tabla provincias
-        String insertSqlPrice = "INSERT INTO prices (st_id, fuel_id, price)"
+        String insertSqlPrice = "INSERT INTO prices (st_id, fuel_id, amount)"
                 + "VALUES (?, ?, ?)";
 
         int lote = 5;
