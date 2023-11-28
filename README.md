@@ -14,13 +14,6 @@ Posteriormente, se implementó el código de JDBC para la inserción de los dato
 
 Finalmente, se llevaron a cabo diversas consultas sobre la base de datos, lo que permitió aplicar y evaluar la funcionalidad del modelo diseñado. Cada relación presente en el diagrama Entidad-Relación fue acompañada de una descripción breve de la técnica utilizada, destacando su relevancia y aplicabilidad en el contexto del proyecto.
 
-Para poder interactuar con la WEB creada se puede visitar el siguiente enlace:
-- [WEB JavaScript y AJAX](https://jmpinillos.github.io/dar_a2/index.html)
-
-También se puede visitar el repositorio completo el cual contiene todos los detalles:
-
-- [GitHub/dar_a2]([JMPinillos/Relarional-Database-Design (github.com)](https://github.com/JMPinillos/Relarional-Database-Design))
-
 
 
 ## Diseño del diagrama Entidad-Relación
@@ -311,12 +304,6 @@ El código Java proporciona una solución para importar datos desde un archivo C
 7. **Manejo de Errores**:
 
    El código maneja excepciones, registrando mensajes de error detallados en caso de problemas durante la ejecución. Esto garantiza una gestión robusta de errores y facilita la depuración.
-
-
-
-
-
-
 
 
 
