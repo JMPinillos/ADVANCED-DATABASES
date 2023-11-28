@@ -74,5 +74,3 @@ create table prices
     constraint prices_stations_st_id_fk
         foreign key (st_id) references stations (st_id)
 );
-
-
