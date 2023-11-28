@@ -184,7 +184,7 @@ En este apartado muestro la transformación del diagrama entidad-relación en un
 
 
 
-## Lenguaje de Definición de Datos (DDL, *Data Definition Languaje*)
+### Lenguaje de Definición de Datos (DDL, *Data Definition Languaje*)
 
 ```sql
 CREATE SCHEMA laboratorio_EESS COLLATE utf8b4_0900_ai_ci;
@@ -269,7 +269,7 @@ create table prices
 
 ## Consultas
 
-1. **Nombre de la empresa con más estaciones de servicio terrestres**
+1. **Nombre de la empresa con más estaciones de servicio terrestres**.
 
    ```sql
    SELECT count(*) as total, name as empresa
@@ -283,7 +283,7 @@ create table prices
 
     
 
-2. **Nombre de la empresa con más estaciones de servicio marítimas**
+2. **Nombre de la empresa con más estaciones de servicio marítimas**.
 
    ```sql
    SELECT count(*) as total, name as empresa
@@ -297,7 +297,7 @@ create table prices
 
    
 
-3. **Localización, nombre de empresa y margen de la estación con el precio más bajo para el combustible «Gasolina 95 E5» en la Comunidad de Madrid**
+3. **Localización, nombre de empresa y margen de la estación con el precio más bajo para el combustible «Gasolina 95 E5» en la Comunidad de Madrid**.
 
    ```sql
    SELECT longitude as longitud, latitude as latitud, operators.name as empresa,  margin as margen
@@ -314,7 +314,7 @@ create table prices
 
    
 
-4. **Localización, nombre de empresa y margen de la estación con el precio más bajo para el combustible «Gasóleo A» si resido en el centro de Albacete y no quiero desplazarme más de 10 KM**
+4. **Localización, nombre de empresa y margen de la estación con el precio más bajo para el combustible «Gasóleo A» si resido en el centro de Albacete y no quiero desplazarme más de 10 KM**.
 
    ```sql
    SELECT stations.longitude as longitud, stations.latitude as latitud, operators.name as empresa, stations.margin as margen, amount
@@ -330,7 +330,7 @@ create table prices
 
     
 
-5. **Provincia en la que se encuentre la estación de servicio marítima con el combustible «Gasolina 95 E5» más caro**
+5. **Provincia en la que se encuentre la estación de servicio marítima con el combustible «Gasolina 95 E5» más caro**.
 
    ```sql
    SELECT provinces.name as nombre
