@@ -122,7 +122,7 @@ En segundo lugar, se capturaron todos los elementos necesarios para representar 
   - Claves primarias: *fuel_id*, *st_id*
 - **stations**:
   - Clave primaria: *st_id*
-  - Claves foráneas: loc_id, op_id, fuel_id
+  - Claves foráneas: loc_id, op_id
 
 
 
