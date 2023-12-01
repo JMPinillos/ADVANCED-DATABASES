@@ -274,7 +274,7 @@ create table prices
    ```sql
    SELECT count(*) as total, name as empresa
    FROM operators, stations
-   WHERE stations.op_id=operators.op_id and
+   WHERE stations.op_id = operators.op_id and
          type = 'T'
    GROUP BY empresa
    ORDER BY total DESC
@@ -288,7 +288,7 @@ create table prices
    ```sql
    SELECT count(*) as total, name as empresa
    FROM operators, stations
-   WHERE stations.op_id=operators.op_id and
+   WHERE stations.op_id = operators.op_id and
          type = 'M'
    GROUP BY empresa
    ORDER BY total DESC
