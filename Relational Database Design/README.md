@@ -319,7 +319,7 @@ create table prices
    ```sql
    SELECT stations.longitude as longitud, stations.latitude as latitud, operators.name as empresa, stations.margin as margen, amount
    FROM stations, operators, fuels, prices
-   WHERE stations.st_id = operators.op_id AND
+   WHERE stations.op_id = operators.op_id AND
          stations.st_id = prices.st_id AND
          fuels.fuel_id = prices.fuel_id AND
          fuels.name = 'Gasoleo A' AND
