@@ -110,7 +110,6 @@ public class MySqlApplicationIntake {
                 for (MySqlProvinces compare : provinces) {
                     if (compare.getName().equals(nextLine[0])) {
                         province = compare;
-                        break;
                     }
                 }
 
@@ -199,7 +198,6 @@ public class MySqlApplicationIntake {
                 for (MySqlMunicipalities compare : municipalities) {
                     if (compare.getName().equals(nextLine[1])) {
                         municipalitie = compare;
-                        break;
                     }
                 }
 
@@ -209,7 +207,6 @@ public class MySqlApplicationIntake {
                     for (MySqlProvinces province : provinces) {
                         if (province.getName().equals(nextLine[0])) {
                             id_pro = province.getPro_id();
-                            break;
                         }
                     }
                     municipalitie = new MySqlMunicipalities(
@@ -297,7 +294,6 @@ public class MySqlApplicationIntake {
                 for (MySqlLocalities compare : localities) {
                     if (compare.getName().equals(nextLine[2])) {
                         localitie = compare;
-                        break;
                     }
                 }
 
@@ -307,7 +303,6 @@ public class MySqlApplicationIntake {
                     for (MySqlMunicipalities municipalitie : municipalities) {
                         if (municipalitie.getName().equals(nextLine[1])) {
                             id_mun = municipalitie.getMun_id();
-                            break;
                         }
                     }
                     localitie = new MySqlLocalities(
@@ -394,7 +389,6 @@ public class MySqlApplicationIntake {
                 for (MySqlOperators compare : operators) {
                     if (compare.getName().contentEquals(nextLine[25])) {
                         operator = compare;
-                        break;
                     }
                 }
 
@@ -481,7 +475,6 @@ public class MySqlApplicationIntake {
                 for (MySqlFuels compare : fuels) {
                     if (compare.getName().equals(nextLine[i])) {
                         fuel = compare;
-                        break;
                     }
                 }
 
@@ -576,7 +569,6 @@ public class MySqlApplicationIntake {
 
                     if (compare.getAddress().equals(nextLine[4]) && compare.getMargen().equals(nextLine[5]) && compare.getLongitud().equals(longitud) && compare.getLatitud().equals(latitud)) {
                         station = compare;
-                        break;
                     }
                 }
 
@@ -586,7 +578,6 @@ public class MySqlApplicationIntake {
                     for (MySqlLocalities localitie : localities) {
                         if (localitie.getName().equals(nextLine[2])) {
                             id_loc = localitie.getLoc_id();
-                            break;
                         }
                     }
 
@@ -595,7 +586,6 @@ public class MySqlApplicationIntake {
                     for (MySqlOperators operator : operators) {
                         if (operator.getName().equals(nextLine[25])) {
                             id_op = operator.getOp_id();
-                            break;
                         }
                     }
 
@@ -693,7 +683,6 @@ public class MySqlApplicationIntake {
 
                                 if (station.getAddress().equals(nextLine[4]) && station.getMargen().equals(nextLine[5]) && station.getLongitud().equals(longitud) && station.getLatitud().equals(latitud)) {
                                     id_st = station.getStation_id();
-                                    break;
                                 }
                             }
 
