@@ -4,7 +4,7 @@ Este repositorio contiene el código y los documentos relacionados con dos activ
 
 
 
-### [Actividad 1: Diseño de una Base de Datos Relacional](https://github.com/JMPinillos/ADVANCED-DATABASES/tree/main/Relational%Database%Design)
+### [Actividad 1: Diseño de una Base de Datos Relacional](https://github.com/JMPinillos/ADVANCED-DATABASES/tree/main/Relational%20Database%20Design)
 
 En esta actividad, se aborda el proceso estructurado para diseñar e implementar una base de datos relacional. Los pasos principales incluyen:
 
