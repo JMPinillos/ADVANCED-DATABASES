@@ -4,7 +4,7 @@ Este repositorio contiene el código y los documentos relacionados con dos activ
 
 
 
-## [Actividad 1: Diseño de una Base de Datos Relacional](https://github.com/JMPinillos/ADVANCED-DATABASES/tree/main/Relational Database Design)
+### [Actividad 1: Diseño de una Base de Datos Relacional](https://github.com/JMPinillos/ADVANCED-DATABASES/tree/main/Relational Database Design)
 
 En esta actividad, se aborda el proceso estructurado para diseñar e implementar una base de datos relacional. Los pasos principales incluyen:
 
@@ -16,7 +16,7 @@ En esta actividad, se aborda el proceso estructurado para diseñar e implementar
 
 
 
-## [Actividad 2: Índices en Bases de Datos](https://github.com/JMPinillos/ADVANCED-DATABASES/tree/main/Indexes in Databases)
+### [Actividad 2: Índices en Bases de Datos](https://github.com/JMPinillos/ADVANCED-DATABASES/tree/main/Indexes in Databases)
 
 En esta actividad, nos enfocamos en afianzar los conocimientos sobre índices en bases de datos y evaluar su efectividad. Los pasos principales incluyen:
 
