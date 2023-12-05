@@ -16,7 +16,7 @@ En esta actividad, se aborda el proceso estructurado para diseñar e implementar
 
 
 
-### [Actividad 2: Índices en Bases de Datos](https://github.com/JMPinillos/ADVANCED-DATABASES/tree/main/Indexes in Databases)
+### [Actividad 2: Índices en Bases de Datos](https://github.com/JMPinillos/ADVANCED-DATABASES/tree/main/Relational%20Database%20Design)
 
 En esta actividad, nos enfocamos en afianzar los conocimientos sobre índices en bases de datos y evaluar su efectividad. Los pasos principales incluyen:
 
