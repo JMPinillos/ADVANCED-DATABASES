@@ -64,8 +64,6 @@ En situaciones donde se tienen claves compuestas (`prices`) que constan de múlt
 
 
 
-
-
 - **provinces**:
   - Clave primaria: *pro_id*
 - **municipalities**:
