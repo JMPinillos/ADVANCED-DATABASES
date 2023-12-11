@@ -605,7 +605,7 @@ En esta sección se justificará la creación de otros posibles índices para ot
 
 
 
-#### operators.name
+#### `operators.name`
 
 Cuando realicemos consultas para obtener información sobre una estación de servicio asociada a un operador particular, por ejemplo: Repsol o Petronor, el índice en `operators.name` facilitará una búsqueda rápida y eficiente. Sin este índice, la búsqueda requeriría un escaneo completo de la tabla `operators` para encontrar coincidencias, lo que podría resultar costoso en términos de tiempo, especialmente a medida que la cantidad de datos aumenta.
 
@@ -626,7 +626,7 @@ WHERE stations.loc_id = localities.loc_id and
 
 
 
-#### provinces.name
+#### `provinces.name`
 
 Al indexar la columna `name` en la tabla `provinces`, se agiliza significativamente la ejecución de consultas que buscan estaciones de servicio en una provincia particular. Se justificaría la creación de este índice en escenarios donde las consultas frecuentes estuvieran orientadas a recuperar información específica sobre estaciones de servicio ubicadas en una provincia concreta, como en el caso de buscar las estaciones de servicio en La Rioja.
 
@@ -647,7 +647,7 @@ WHERE stations.loc_id = localities.loc_id and
 
 
 
-#### municipalities.name
+#### `municipalities.name`
 
 Al igual que en la creación del índice anterior, la creación del índice `municipalities.name` se justifica en situaciones en las que las consultas frecuentes se centran en recuperar información específica sobre estaciones de servicio ubicadas en un municipio particular. 
 
@@ -667,7 +667,7 @@ WHERE stations.loc_id = localities.loc_id and
 
 
 
-#### prices.amount
+#### `prices.amount`
 
 Este caso es más específico, pues habitualmente se suelen consultar los precios más baratos, pero crear el índice `prices.amount` se justificaría en situaciones en las que las consultas frecuentes se centraran en consultas que buscan información específica sobre los precios de los combustibles en las estaciones de servicio.
 
