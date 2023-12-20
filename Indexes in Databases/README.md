@@ -58,6 +58,8 @@ En esta sección, revisaré los índices predeterminados y evaluaré el rendimie
 
 En nuestro esquema relacional, se crean varios índices automáticamente en ciertos tipos de columnas por varias razones.
 
+En el caso de la clave primaria, este índice se establece para mejorar la velocidad de las búsquedas y garantizar la unicidad de los valores, ya que acelera la recuperación de datos mediante la clave primaria.
+
 Por otro lado, en las columnas que contienen claves foráneas, los índices se generan automáticamente para mejorar la eficiencia de las consultas de unión. Al crear un índice en la columna que contiene la clave foránea, se acelera la búsqueda de valores relacionados en la tabla referenciada.
 
 En situaciones donde se tienen claves compuestas (`prices`) que constan de múltiples columnas, la creación automática de índices tiene como objetivo mejorar la velocidad de las consultas, especialmente a las que involucran varias columnas en condiciones `WHERE` o `JOIN`.
