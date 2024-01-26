@@ -26,3 +26,14 @@ En esta actividad, nos enfocamos en afianzar los conocimientos sobre índices en
 4. Mejora de las consultas a través de la creación de nuevos índices.
 5. Indexación de otros posibles atributos de la base de datos.
 
+
+
+### [Actividad 3: Bases de datos NoSQL y motores de búsqueda](https://github.com/JMPinillos/ADVANCED-DATABASES/tree/main/INoSQL%databases%and%search%engines)
+
+En esta actividad, exploramos las bases de datos NoSQL y los motores de  búsqueda, poniendo énfasis en su aplicación y eficiencia. Los pasos  principales de la actividad son:
+
+1. Estudio de las características y tipos de Bases de Datos NoSQL.
+2. Diseño e implementación de una Base de Datos NoSQL en MongoDB.
+3. Integración con un motor de búsqueda (Elasticsearch).
+4. Implementación del Proceso ETL para la migración de Datos.
+5. Evaluación del rendimiento y optimización del sistema integrado.
