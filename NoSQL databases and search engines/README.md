@@ -68,7 +68,9 @@ Una vez que hemos creado nuestra cuenta en MongoDB Atlas, procedemos con la conf
 
 Tras haber configurado y creado el cluster, accedemos a él y nos dirigimos a la pestaña de “*Collections*”. Aquí, seleccionamos el botón “*+ Create Database*”, ubicado en la parte superior izquierda. Al hacer clic en este botón, se nos presenta una ventana donde debemos introducir el nombre de nuestra nueva base de datos y el de la colección inicial. Al pulsar el botón “*Create*”, la base de datos junto con la colección especificada se creará, tal como se visualiza en la siguiente imagen.
 
-![image-20240126135756329](../../../../AppData/Roaming/Typora/typora-user-images/image-20240126135756329.png)
+
+
+<img src="images/Pantalla_creacion_BD.png" alt="Pantalla_creacion_BD" style="zoom: 50%;" />
 
 <center><i>Creación de nueva Base de Datos y Colección en MongoDB Atlas</i></center>
 
@@ -78,7 +80,7 @@ Una vez establecida, nuestra base de datos en MongoDB Atlas aún se encuentra si
 
 
 
-![image-20240126135842972](../../../../AppData/Roaming/Typora/typora-user-images/image-20240126135842972.png)
+![New_DB_user](images/New_DB_user.png)
 
 <center><i>Configuración de Usuario Administrador en MongoDB Atlas</i></center>
 
@@ -156,7 +158,7 @@ El uso de esta interfaz gráfica facilita la creación de índices, permitiéndo
 
 
 
-![image-20240126141032923](../../../../AppData/Roaming/Typora/typora-user-images/image-20240126141032923.png)
+![Create_index](images/Create_index.png)
 
 <center><i>Interfaz de Creación de Índices en MongoDB Atlas</i></center>
 
@@ -201,7 +203,7 @@ La inserción de datos en MongoDB puede abordarse de dos maneras:
 
    
 
-   ![image-20240126141331026](../../../../AppData/Roaming/Typora/typora-user-images/image-20240126141331026.png)
+   ![Document](images/Document.png)
 
    <center><i>Vista del documento subido a la BD</i></center>
 
