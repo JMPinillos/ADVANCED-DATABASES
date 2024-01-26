@@ -337,7 +337,7 @@ La inserción de datos en el índice ***service_stations\*** puede realizarse de
 
 
 
-## PROCESO ETL (*Extract, Transform, Load*)
+## Proceso ETL (*Extract, Transform, Load*)
 
 En la primera actividad, desarrollamos una base de datos relacional en MySQL para almacenar los precios de los combustibles de las estaciones de servicio en España. Esta base de datos fue diseñada para capturar y organizar los datos de manera estructurada y eficiente.
 
@@ -432,47 +432,47 @@ El último método en el proceso ETL dentro de la clase **ExportarEstacionesElas
 
 
 
-### Prueba de inserción con MongoDB
+## Prueba de inserción con MongoDB
 
 En la sección "Desarrollo" de nuestro documento, exploramos la integración con MongoDB como una extensión natural de nuestro proyecto. Animados por esta posibilidad, decidimos llevar a cabo una prueba práctica para demostrar la creación de documentos en MongoDB desde Java. Este ejercicio no solo sirve para validar nuestra comprensión teórica, sino también para reforzar nuestras habilidades prácticas en la integración de bases de datos NoSQL en aplicaciones Java. Los pasos seguidos para esta prueba fueron:
 
 
 
-#### Instalación del Driver de MongoDB:
+### Instalación del Driver de MongoDB:
 
 Comenzamos incluyendo el driver de MongoDB en nuestro proyecto. Para ello, añadimos la dependencia necesaria en el archivo **`pom.xml`**. Esta adición asegura que todas las funcionalidades y operaciones específicas de MongoDB estén disponibles para su uso en nuestro entorno de desarrollo Java.
 
 
 
-#### Creación de la Clase MongoConnector.java:
+### Creación de la Clase MongoConnector.java:
 
 Desarrollamos la clase MongoConnector.java dentro del paquete **`com.unir.config`**. Esta clase es fundamental, ya que establece la conexión con nuestra base de datos MongoDB, actuando como un puente entre nuestra aplicación Java y MongoDB.
 
 
 
-#### Configuración de la Variable de Entorno MONGO_URL:
+### Configuración de la Variable de Entorno MONGO_URL:
 
 Configuramos la variable de entorno **`MONGO_URL`** en nuestro IDE. Esta variable contiene la cadena de conexión a nuestra base de datos MongoDB Atlas, asegurando un acceso seguro y autenticado. La utilización de una variable de entorno para la cadena de conexión es una práctica recomendada para mantener la seguridad de las credenciales.
 
  
 
-#### Inserción de Documentos con la Clase InsertarDocMongo:
+### Inserción de Documentos con la Clase InsertarDocMongo:
 
 Implementamos la clase **`InsertarDocMongo`** en el paquete **`com.unir.app.write`**. Esta clase es crucial, ya que es donde se lleva a cabo la inserción de documentos en MongoDB. Para mantener la coherencia con el tema de nuestro proyecto, insertamos datos de una estación de servicio en la base de datos. Hemos nombrado la base de datos como “Gasolina” y la colección de estaciones como “LaGasolinera”. La elección de estos nombres no solo sigue la temática del proyecto, sino que también facilita la identificación y el manejo de los datos relacionados con estaciones de servicio.
 
 
 
-## CONFIGURACIÓN DEL ENTORNO JAVA
+## Configuración del entorno JAVA
 
-Para facilitar la integración efectiva con Elasticsearch a través del servicio [Bonsai](mailto:https://bonsai.io/) y la gestión de datos de estaciones de servicio, se ha configurado un entorno Java específico. Esta configuración implica la instalación de librerías esenciales y la definición de variables de entorno críticas.
+Para facilitar la integración efectiva con Elasticsearch a través del servicio [Bonsai](https://bonsai.io/) y la gestión de datos de estaciones de servicio, se ha configurado un entorno Java específico. Esta configuración implica la instalación de librerías esenciales y la definición de variables de entorno críticas.
 
 ### Instalación de librerías
 
 En el desarrollo de este proyecto, se han empleado dos librerías fundamentales:
 
-- **com.google.gson**: Esta librería es utilizada extensamente para manejar operaciones relacionadas con JSON, como la creación, manipulación y conversión de datos en este formato. Su uso es clave para el proceso de transformación de datos de la base de datos relacional a JSON, y posteriormente para su manipulación antes de la carga en Elasticsearch.
+- **`com.google.gson`**: Esta librería es utilizada extensamente para manejar operaciones relacionadas con JSON, como la creación, manipulación y conversión de datos en este formato. Su uso es clave para el proceso de transformación de datos de la base de datos relacional a JSON, y posteriormente para su manipulación antes de la carga en Elasticsearch.
 
-- **org.apache.http**: Se emplea para realizar peticiones HTTP al servicio [Bonsai](mailto:https://bonsai.io/). Esta librería es esencial para la creación del índice en Elasticsearch y para la carga de datos. Facilita la comunicación entre nuestra aplicación Java y el servidor de Elasticsearch alojado en [Bonsai](mailto:https://bonsai.io/).
+- **`org.apache.http`**: Se emplea para realizar peticiones HTTP al servicio [Bonsai](https://bonsai.io/). Esta librería es esencial para la creación del índice en Elasticsearch y para la carga de datos. Facilita la comunicación entre nuestra aplicación Java y el servidor de Elasticsearch alojado en [Bonsai](https://bonsai.io/).
 
 
 
@@ -492,7 +492,7 @@ Para la correcta configuración del entorno y la seguridad de las credenciales, 
 
 
 
-## CONCLUSIONES
+## Conclusiones
 
 Tras concluir este proyecto, nos encontramos con un sistema robusto y flexible de gestión de datos, que integra las fortalezas de MongoDB y Elasticsearch. La elección inicial de un esquema relacional adecuado y su posterior transformación a un modelo NoSQL en MongoDB han establecido una base sólida para nuestro almacenamiento de datos. La integración con Elasticsearch ha añadido una capa de eficiencia y poder en la búsqueda y análisis de datos, lo que nos permite manejar consultas complejas con facilidad y precisión.
 
