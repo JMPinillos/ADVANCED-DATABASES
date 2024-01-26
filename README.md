@@ -28,7 +28,9 @@ En esta actividad, nos enfocamos en afianzar los conocimientos sobre índices en
 
 
 
-### [Actividad 3: Bases de datos NoSQL y motores de búsqueda](https://github.com/JMPinillos/ADVANCED-DATABASES/tree/main/NoSQL databases and search engines)
+
+
+### [Actividad 3: Bases de datos NoSQL y motores de búsqueda](https://github.com/JMPinillos/ADVANCED-DATABASES/tree/main/NoSQL%databases%and%search%engines)
 
 En esta actividad, exploramos las bases de datos NoSQL y los motores de  búsqueda, poniendo énfasis en su aplicación y eficiencia. Los pasos  principales de la actividad son:
 
