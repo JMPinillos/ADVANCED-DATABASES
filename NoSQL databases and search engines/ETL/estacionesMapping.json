@@ -1,0 +1,57 @@
+{
+  "mappings": {
+    "properties": {
+      "Empresa": {
+        "type": "text"
+      },
+      "Direccion": {
+        "type": "text"
+      },
+      "CodigoPostal": {
+        "type": "text"
+      },
+      "Latitud": {
+        "type": "float"
+      },
+      "Longitud": {
+        "type": "float"
+      },
+      "Localidad": {
+        "type": "text"
+      },
+      "Municipio": {
+        "type": "text"
+      },
+      "Provincia": {
+        "type": "text"
+      },
+      "FechaPrecios": {
+        "type": "date",
+        "format": "yyyy-MM-dd"
+      },
+      "Horario": {
+        "type": "text"
+      },
+      "TipoEstacion": {
+        "type": "text"
+      },
+      "TipoVenta": {
+        "type": "text"
+      },
+      "Margen": {
+        "type": "text"
+      },
+      "Precios": {
+        "type": "nested",
+        "properties": {
+          "carburante": {
+            "type": "text"
+          },
+          "precio": {
+            "type": "float"
+          }
+        }
+      }
+    }
+  }
+}
