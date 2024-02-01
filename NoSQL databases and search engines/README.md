@@ -2,7 +2,7 @@
 
 ## Introducción
 
-Este proyecto representa nuestra incursión en el mundo de la gestión de bases de datos, donde nos proponemos integrar y optimizar dos sistemas de gestión de bases de datos líderes en su clase: MongoDB y Elasticsearch. A través de este proyecto, buscamos no solo fortalecer nuestra comprensión de estas tecnologías avanzadas, sino también explorar su sinergia y aplicabilidad en escenarios del mundo real.
+Este proyecto representa nuestra incursión en el mundo de la gestión de bases de datos, diferenciando entre MongoDB, un sistema de gestión de bases de datos NoSQL, diseñado para almacenar grandes volúmenes de datos con esquemas dinámicos, y Elasticsearch, un motor de búsqueda basado en Lucene,  optimizado para búsquedas rápidas en grandes cantidades de datos y análisis en tiempo real. A través de este proyecto, buscamos no solo fortalecer nuestra comprensión de estas tecnologías avanzadas, sino también explorar su sinergia y aplicabilidad en escenarios del mundo real.
 
 El proyecto comienza con una evaluación crítica y la selección de un esquema relacional óptimo. Esta etapa inicial es crucial, ya que establece la base sobre la cual se construirá todo el sistema. Después de considerar varios esquemas propuestos, seleccionamos uno que se destacaba por su capacidad para reducir la duplicación de datos y facilitar consultas eficientes, dos aspectos esenciales para el rendimiento de cualquier base de datos.
 
@@ -16,7 +16,7 @@ Con este proyecto, pretendemos no solo alcanzar un entendimiento profundo de Mon
 
 ## Desarrollo
 
-En las siguientes secciones, detallamos el proceso de integración y configuración de dos sistemas de gestión de bases de datos altamente eficientes: MongoDB y Elasticsearch. Abordaremos desde la elección del esquema de datos hasta la implementación práctica, asegurando una base sólida para el manejo y análisis de la información en nuestro proyecto.
+En las siguientes secciones, describiremos cómo configurar y utilizar MongoDB, un sistema de gestión de bases de datos NoSQL, y Elasticsearch, un motor de búsqueda, como sistemas independientes dentro de nuestro proyecto. Abordaremos desde la elección del esquema de datos hasta la implementación práctica, asegurando una base sólida para el manejo y análisis de la información en nuestro proyecto.
 
 
 
