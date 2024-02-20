@@ -1,6 +1,6 @@
 # Repositorio de Actividades: Bases de Datos Avanzadas
 
-Este repositorio contiene el código y los documentos relacionados con dos actividades académicas de la asignatura **Bases de Datos Avanzadas**:
+Este repositorio contiene el código y los documentos relacionados con tres actividades académicas de la asignatura **Bases de Datos Avanzadas**:
 
 
 
